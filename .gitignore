@@ -1,0 +1,71 @@
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Build outputs
+dist/
+build/
+.next/
+out/
+.expo/
+web-build/
+
+# Environment variables (NEVER commit these)
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+*.env
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+*.log
+
+# Editor
+.vscode/settings.json
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# Supabase local
+supabase/.branches
+supabase/.temp
+
+# Netlify
+.netlify/
+
+# Coverage
+coverage/
+*.lcov
+
+# Runtime
+.npm
+.eslintcache
+.stylelintcache
+
+# Expo
+.expo/
+expo-env.d.ts
+
+# Mobile
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+*.orig.*
+ios/
+android/
+
+# Temp
+*.tmp
+*.temp
+*.bak
