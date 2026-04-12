@@ -1,0 +1,78 @@
+{
+  "nav": {
+    "dashboard": "Dashboard",
+    "alerts": "Alertas",
+    "tickets": "Tickets",
+    "assets": "Activos",
+    "reports": "Reportes",
+    "settings": "Configuración",
+    "logout": "Cerrar sesión"
+  },
+  "severity": {
+    "critical": "Crítico",
+    "medium": "Medio",
+    "low": "Bajo",
+    "ok": "Normal"
+  },
+  "status": {
+    "new": "Nuevo",
+    "acknowledged": "Confirmado",
+    "in_review": "En revisión",
+    "resolved": "Resuelto",
+    "audited": "Auditado",
+    "false_positive": "Falso positivo",
+    "active": "Activo",
+    "inactive": "Inactivo"
+  },
+  "assetType": {
+    "well": "Pozo",
+    "pipeline": "Oleoducto",
+    "plant": "Planta",
+    "tank": "Tanque",
+    "platform": "Batería/Plataforma"
+  },
+  "anomalyType": {
+    "spill": "Derrame",
+    "leak": "Fuga",
+    "fire": "Actividad térmica",
+    "land_change": "Cambio superficial",
+    "unauthorized_access": "Acceso no autorizado",
+    "none": "Sin anomalía"
+  },
+  "buttons": {
+    "acknowledge": "Confirmar",
+    "viewTicket": "Ver ticket",
+    "viewDetails": "Ver detalles",
+    "download": "Descargar",
+    "generate": "Generar",
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "close": "Cerrar",
+    "verify": "Verificar integridad",
+    "addComment": "Agregar comentario",
+    "markResolved": "Marcar resuelto",
+    "audit": "Auditar"
+  },
+  "time": {
+    "justNow": "Ahora mismo",
+    "minutesAgo": "hace {{count}} min",
+    "hoursAgo": "hace {{count}}h",
+    "daysAgo": "hace {{count}}d",
+    "today": "Hoy",
+    "yesterday": "Ayer"
+  },
+  "filters": {
+    "all": "Todos",
+    "filterBy": "Filtrar por",
+    "severity": "Severidad",
+    "status": "Estado",
+    "search": "Buscar...",
+    "dateRange": "Rango de fechas"
+  },
+  "confidence": "Confianza",
+  "area": "Área",
+  "responsible": "Responsable",
+  "loading": "Cargando...",
+  "noData": "Sin datos disponibles",
+  "demoMode": "MODO DEMO — Datos ficticios para presentación"
+}

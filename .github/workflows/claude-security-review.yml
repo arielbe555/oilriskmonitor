@@ -1,0 +1,170 @@
+name: Claude Security Review
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+jobs:
+  security-review:
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Get PR diff
+        id: diff
+        run: |
+          git diff origin/${{ github.base_ref }}...HEAD > pr_diff.txt
+          echo "lines=$(wc -l < pr_diff.txt)" >> $GITHUB_OUTPUT
+
+      - name: Claude Security Audit
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          python3 << 'EOF'
+          import anthropic, json, sys
+
+          with open('pr_diff.txt', 'r') as f:
+              diff = f.read()[:15000]
+
+          if not diff.strip():
+              print('No diff to analyze')
+              with open('security_report.json', 'w') as f:
+                  json.dump({
+                      "approved": True,
+                      "risk_level": "CLEAN",
+                      "vulnerabilities": [],
+                      "compliance_flags": [],
+                      "summary": "No changes to analyze."
+                  }, f, indent=2)
+              sys.exit(0)
+
+          client = anthropic.Anthropic()
+          response = client.messages.create(
+              model="claude-opus-4-5",
+              max_tokens=3000,
+              system="""You are an expert security auditor for B2B SaaS multitenant platforms
+              in the Oil & Gas industry. You specialize in:
+              - Multitenant data isolation (schema-per-tenant PostgreSQL)
+              - Supabase RLS (Row Level Security) policy correctness
+              - Node.js/Express API security (OWASP API Security Top 10)
+              - Compliance: ISO 27001, SOC 2 Type II, OWASP, GDPR/LGPD
+
+              Respond ONLY with valid JSON, no markdown.""",
+              messages=[{
+                  "role": "user",
+                  "content": f"""Audit this PR diff for security vulnerabilities.
+
+SYSTEM CONTEXT:
+- Multitenant platform: oil operators, insurers, environmental consultants
+- Each tenant has isolated PostgreSQL schema (schema-per-tenant)
+- Stack: Node.js/Express + Supabase (PostgreSQL + RLS) + React/Vite
+- Compliance: ISO 27001, SOC 2 Type II, ISO 14001, GDPR/LGPD, OWASP
+
+DIFF:
+{diff}
+
+Check for:
+1. SQL Injection / NoSQL Injection
+2. Tenant data leakage (cross-tenant data access)
+3. RLS policies bypassed or misconfigured
+4. Hardcoded credentials or API keys
+5. Endpoints without auth/authorization
+6. IDOR (Insecure Direct Object Reference)
+7. XSS in user inputs
+8. CSRF on critical operations
+9. Missing rate limiting on sensitive endpoints
+10. Sensitive data logged (PII, GPS coords, API keys)
+11. Vulnerable dependencies (known CVEs)
+12. Missing input validation on file uploads
+13. Digital signature or hash integrity issues
+14. Missing security headers (CSP, HSTS, X-Frame-Options)
+
+Respond with EXACTLY this JSON structure:
+{{
+  "approved": boolean,
+  "risk_level": "CRITICAL"|"HIGH"|"MEDIUM"|"LOW"|"CLEAN",
+  "vulnerabilities": [
+    {{
+      "severity": "CRITICAL"|"HIGH"|"MEDIUM"|"LOW",
+      "type": "vulnerability type name",
+      "file": "filename where found",
+      "line": number or null,
+      "description": "what the problem is",
+      "fix": "how to fix it specifically"
+    }}
+  ],
+  "compliance_flags": ["ISO27001-A.9", "SOC2-CC6", "OWASP-A01"],
+  "summary": "2-sentence executive summary"
+}}"""
+              }]
+          )
+
+          result = json.loads(response.content[0].text)
+
+          with open('security_report.json', 'w') as f:
+              json.dump(result, f, indent=2)
+
+          if result['risk_level'] == 'CRITICAL':
+              sys.exit(1)
+          EOF
+
+      - name: Post Review Comment
+        if: always()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+
+            if (!fs.existsSync('security_report.json')) {
+              return;
+            }
+
+            const report = JSON.parse(fs.readFileSync('security_report.json'));
+            const icons = { CRITICAL:'🚨', HIGH:'🔴', MEDIUM:'🟡', LOW:'🔵', CLEAN:'✅' };
+            const icon = icons[report.risk_level] || '⚪';
+
+            let body = `## ${icon} Claude Security Review — ${report.risk_level}\n\n`;
+            body += `**${report.summary}**\n\n`;
+
+            if (report.vulnerabilities && report.vulnerabilities.length > 0) {
+              body += `### Vulnerabilities Found\n\n`;
+              for (const v of report.vulnerabilities) {
+                body += `#### ${icons[v.severity] || '⚪'} [${v.severity}] ${v.type}\n`;
+                body += `- **File:** \`${v.file}\`${v.line ? ` line ${v.line}` : ''}\n`;
+                body += `- **Issue:** ${v.description}\n`;
+                body += `- **Fix:** ${v.fix}\n\n`;
+              }
+            }
+
+            if (report.compliance_flags && report.compliance_flags.length > 0) {
+              body += `### Compliance Flags\n`;
+              body += report.compliance_flags.map(f => `\`${f}\``).join(' · ') + '\n\n';
+            }
+
+            body += report.approved
+              ? `✅ **PR approved for merge.**`
+              : `❌ **PR blocked. Resolve vulnerabilities before merging.**`;
+
+            try {
+              await github.rest.pulls.createReview({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                pull_number: context.issue.number,
+                body,
+                event: report.approved ? 'APPROVE' : 'REQUEST_CHANGES'
+              });
+            } catch (e) {
+              // Fallback to comment if review fails
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body
+              });
+            }

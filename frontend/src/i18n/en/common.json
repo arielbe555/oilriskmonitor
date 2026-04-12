@@ -1,0 +1,78 @@
+{
+  "nav": {
+    "dashboard": "Dashboard",
+    "alerts": "Alerts",
+    "tickets": "Tickets",
+    "assets": "Assets",
+    "reports": "Reports",
+    "settings": "Settings",
+    "logout": "Log out"
+  },
+  "severity": {
+    "critical": "Critical",
+    "medium": "Medium",
+    "low": "Low",
+    "ok": "Normal"
+  },
+  "status": {
+    "new": "New",
+    "acknowledged": "Acknowledged",
+    "in_review": "In Review",
+    "resolved": "Resolved",
+    "audited": "Audited",
+    "false_positive": "False Positive",
+    "active": "Active",
+    "inactive": "Inactive"
+  },
+  "assetType": {
+    "well": "Well",
+    "pipeline": "Pipeline",
+    "plant": "Plant",
+    "tank": "Tank",
+    "platform": "Platform"
+  },
+  "anomalyType": {
+    "spill": "Spill",
+    "leak": "Leak",
+    "fire": "Thermal Activity",
+    "land_change": "Land Change",
+    "unauthorized_access": "Unauthorized Access",
+    "none": "No Anomaly"
+  },
+  "buttons": {
+    "acknowledge": "Acknowledge",
+    "viewTicket": "View Ticket",
+    "viewDetails": "View Details",
+    "download": "Download",
+    "generate": "Generate",
+    "save": "Save",
+    "cancel": "Cancel",
+    "close": "Close",
+    "verify": "Verify Integrity",
+    "addComment": "Add Comment",
+    "markResolved": "Mark Resolved",
+    "audit": "Audit"
+  },
+  "time": {
+    "justNow": "Just now",
+    "minutesAgo": "{{count}} min ago",
+    "hoursAgo": "{{count}}h ago",
+    "daysAgo": "{{count}}d ago",
+    "today": "Today",
+    "yesterday": "Yesterday"
+  },
+  "filters": {
+    "all": "All",
+    "filterBy": "Filter by",
+    "severity": "Severity",
+    "status": "Status",
+    "search": "Search...",
+    "dateRange": "Date range"
+  },
+  "confidence": "Confidence",
+  "area": "Area",
+  "responsible": "Responsible",
+  "loading": "Loading...",
+  "noData": "No data available",
+  "demoMode": "DEMO MODE — Fictional data for presentation"
+}

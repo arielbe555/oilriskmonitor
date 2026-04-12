@@ -1,0 +1,80 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Inter:wght@300;400;500;600;700&display=swap');
+@import 'leaflet/dist/leaflet.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background-color: #0A0F1E;
+    color: #E8F0FE;
+    font-family: 'Inter', system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(30, 45, 61, 0.25) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(30, 45, 61, 0.25) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+  #root { position: relative; z-index: 1; min-height: 100vh; }
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-brand hover:bg-orange-500 text-white font-medium px-4 py-2 rounded-lg transition-colors duration-200 text-sm;
+  }
+  .btn-secondary {
+    @apply bg-surface-2 hover:bg-border text-text-primary border border-border hover:border-border-2 font-medium px-4 py-2 rounded-lg transition-colors duration-200 text-sm;
+  }
+  .btn-ghost {
+    @apply hover:bg-surface-2 text-text-secondary hover:text-text-primary px-3 py-2 rounded-lg transition-colors duration-200 text-sm;
+  }
+  .card {
+    @apply bg-surface border border-border rounded-xl p-4;
+  }
+  .badge-critical {
+    @apply bg-critical-dim text-critical border border-critical/30 text-xs font-mono font-bold px-2 py-0.5 rounded uppercase tracking-wider;
+  }
+  .badge-medium {
+    @apply bg-medium-dim text-medium border border-medium/30 text-xs font-mono font-bold px-2 py-0.5 rounded uppercase tracking-wider;
+  }
+  .badge-low {
+    @apply bg-low-dim text-low border border-low/30 text-xs font-mono font-bold px-2 py-0.5 rounded uppercase tracking-wider;
+  }
+  .badge-ok {
+    @apply bg-ok-dim text-ok border border-ok/30 text-xs font-mono font-bold px-2 py-0.5 rounded uppercase tracking-wider;
+  }
+  .badge-info {
+    @apply bg-surface-2 text-text-secondary border border-border text-xs font-mono font-bold px-2 py-0.5 rounded uppercase tracking-wider;
+  }
+  .section-title {
+    @apply text-xs font-mono uppercase tracking-widest text-text-muted mb-3;
+  }
+  .input-field {
+    @apply bg-surface-2 border border-border rounded-lg px-3 py-2 text-text-primary placeholder-text-muted focus:outline-none focus:border-brand transition-colors text-sm w-full;
+  }
+}
+
+/* Leaflet dark overrides */
+.leaflet-container { background: #0A0F1E !important; }
+.leaflet-control-zoom a { background-color: #111827 !important; color: #E8F0FE !important; border-color: #1e2d3d !important; }
+.leaflet-control-zoom a:hover { background-color: #1a2332 !important; }
+.leaflet-popup-content-wrapper { background: #111827 !important; color: #E8F0FE !important; border: 1px solid #1e2d3d !important; border-radius: 8px !important; box-shadow: 0 4px 20px rgba(0,0,0,0.6) !important; }
+.leaflet-popup-tip { background: #111827 !important; }
+.leaflet-bar { border: 1px solid #1e2d3d !important; box-shadow: 0 2px 8px rgba(0,0,0,0.5) !important; }
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: #0A0F1E; }
+::-webkit-scrollbar-thumb { background: #1e2d3d; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #2a3f55; }
