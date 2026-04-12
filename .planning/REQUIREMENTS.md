@@ -146,19 +146,62 @@
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| DASH-01–06 | Phase 1 | Pending |
-| ALRT-01–04 | Phase 1 (UI mock) → Phase 2 (real data) | Pending |
-| TIKT-01–06 | Phase 1 (UI mock) → Phase 2 (real data) | Pending |
-| SATV-01–02 | Phase 1 (mock images) | Pending |
-| RPRT-01–04 | Phase 1 (mock) → Phase 3 (real PDF+signature) | Pending |
-| AUTH-01–06 | Phase 2 | Pending |
-| ASST-01–03 | Phase 2 | Pending |
-| SETT-01–04 | Phase 1 (mock) → Phase 2 (real) | Pending |
-| SCAN-01–05 | Phase 3 | Pending |
-| NOTF-01–04 | Phase 3 | Pending |
-| PAPI-01–04 | Phase 2 | Pending |
-| COMP-01–04 | Phase 2 (headers, audit log) + Phase 3 (report signing) | Pending |
-| MOBL-01–04 | Phase 4 | Pending |
+| DASH-01 | Phase 1 | Pending |
+| DASH-02 | Phase 1 | Pending |
+| DASH-03 | Phase 1 | Pending |
+| DASH-04 | Phase 1 | Pending |
+| DASH-05 | Phase 1 | Pending |
+| DASH-06 | Phase 1 | Pending |
+| ALRT-01 | Phase 1 | Pending |
+| ALRT-02 | Phase 1 | Pending |
+| ALRT-03 | Phase 2 | Pending |
+| ALRT-04 | Phase 2 | Pending |
+| TIKT-01 | Phase 1 | Pending |
+| TIKT-02 | Phase 1 | Pending |
+| TIKT-03 | Phase 2 | Pending |
+| TIKT-04 | Phase 2 | Pending |
+| TIKT-05 | Phase 2 | Pending |
+| TIKT-06 | Phase 2 | Pending |
+| SATV-01 | Phase 1 | Pending |
+| SATV-02 | Phase 1 | Pending |
+| RPRT-01 | Phase 1 | Pending |
+| RPRT-02 | Phase 3 | Pending |
+| RPRT-03 | Phase 3 | Pending |
+| RPRT-04 | Phase 3 | Pending |
+| AUTH-01 | Phase 2 | Pending |
+| AUTH-02 | Phase 2 | Pending |
+| AUTH-03 | Phase 2 | Pending |
+| AUTH-04 | Phase 2 | Pending |
+| AUTH-05 | Phase 2 | Pending |
+| AUTH-06 | Phase 2 | Pending |
+| ASST-01 | Phase 2 | Pending |
+| ASST-02 | Phase 2 | Pending |
+| ASST-03 | Phase 2 | Pending |
+| SETT-01 | Phase 1 (mock) / Phase 2 (real) | Pending |
+| SETT-02 | Phase 2 | Pending |
+| SETT-03 | Phase 2 | Pending |
+| SETT-04 | Phase 2 | Pending |
+| SCAN-01 | Phase 3 | Pending |
+| SCAN-02 | Phase 3 | Pending |
+| SCAN-03 | Phase 3 | Pending |
+| SCAN-04 | Phase 3 | Pending |
+| SCAN-05 | Phase 3 | Pending |
+| NOTF-01 | Phase 3 | Pending |
+| NOTF-02 | Phase 3 | Pending |
+| NOTF-03 | Phase 3 | Pending |
+| NOTF-04 | Phase 3 | Pending |
+| PAPI-01 | Phase 2 | Pending |
+| PAPI-02 | Phase 2 | Pending |
+| PAPI-03 | Phase 2 | Pending |
+| PAPI-04 | Phase 2 | Pending |
+| COMP-01 | Phase 2 | Pending |
+| COMP-02 | Phase 2 | Pending |
+| COMP-03 | Phase 3 | Pending |
+| COMP-04 | Phase 2 | Pending |
+| MOBL-01 | Phase 4 | Pending |
+| MOBL-02 | Phase 4 | Pending |
+| MOBL-03 | Phase 4 | Pending |
+| MOBL-04 | Phase 4 | Pending |
 
 **Coverage:**
 - v1 requirements: 48 total
@@ -167,4 +210,4 @@
 
 ---
 *Requirements defined: 2026-04-12*
-*Last updated: 2026-04-12 after initial definition*
+*Last updated: 2026-04-12 — traceability updated with per-requirement phase assignments*
