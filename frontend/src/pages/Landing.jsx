@@ -2,211 +2,249 @@ import { useState, useEffect } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import {
   Satellite, Zap, Shield, FileText, Bell, Lock,
-  ChevronRight, ArrowRight, Radio, Globe, Check,
-  Activity, MapPin, Menu, X
+  ChevronRight, ArrowRight, Radio, Check, Activity, MapPin
 } from 'lucide-react'
 import { useAuth } from '@/hooks/useAuth'
 
-// ── Globe SVG visualization ──────────────────────────────────────────────────
+// ── Globe: ocean + continents + satellite ────────────────────────────────────
 function GlobeViz() {
   return (
-    <div className="relative w-full max-w-[480px] mx-auto select-none">
-      <svg viewBox="0 0 400 400" className="w-full drop-shadow-2xl">
+    <div className="relative w-full max-w-[500px] mx-auto select-none">
+      {/* Floor shadow */}
+      <div className="absolute -bottom-6 left-1/2 -translate-x-1/2 w-[65%] h-10 blur-2xl"
+        style={{ background: 'radial-gradient(ellipse, rgba(59,130,246,0.18) 0%, transparent 70%)' }} />
+
+      <svg viewBox="0 0 400 400" className="w-full relative z-10">
         <defs>
-          <radialGradient id="gf" cx="38%" cy="35%" r="65%">
-            <stop offset="0%" stopColor="#162238" />
-            <stop offset="60%" stopColor="#0e1a2d" />
-            <stop offset="100%" stopColor="#0A0F1E" />
+          {/* Ocean */}
+          <radialGradient id="ocean" cx="36%" cy="30%" r="70%">
+            <stop offset="0%" stopColor="#EFF6FF" />
+            <stop offset="30%" stopColor="#DBEAFE" />
+            <stop offset="65%" stopColor="#BFDBFE" />
+            <stop offset="100%" stopColor="#93C5FD" />
           </radialGradient>
+          {/* 3D highlight top-left */}
+          <radialGradient id="gLight" cx="30%" cy="25%" r="55%">
+            <stop offset="0%" stopColor="white" stopOpacity="0.45" />
+            <stop offset="100%" stopColor="white" stopOpacity="0" />
+          </radialGradient>
+          {/* 3D shadow bottom-right */}
+          <radialGradient id="gShadow" cx="72%" cy="76%" r="52%">
+            <stop offset="0%" stopColor="#1E3A5F" stopOpacity="0.28" />
+            <stop offset="100%" stopColor="#1E3A5F" stopOpacity="0" />
+          </radialGradient>
+          {/* Atmosphere ring */}
+          <radialGradient id="atmo" cx="50%" cy="50%" r="50%">
+            <stop offset="82%" stopColor="#60A5FA" stopOpacity="0" />
+            <stop offset="100%" stopColor="#60A5FA" stopOpacity="0.22" />
+          </radialGradient>
+          {/* Filters */}
           <filter id="dg" x="-80%" y="-80%" width="260%" height="260%">
-            <feGaussianBlur stdDeviation="3" result="b"/>
+            <feGaussianBlur stdDeviation="2.5" result="b"/>
             <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
           </filter>
           <filter id="sg" x="-150%" y="-150%" width="400%" height="400%">
-            <feGaussianBlur stdDeviation="6" result="b"/>
+            <feGaussianBlur stdDeviation="5.5" result="b"/>
             <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
           </filter>
-          <clipPath id="gc"><circle cx="200" cy="200" r="168" /></clipPath>
-          <path id="op"
-            d="M 415 200 A 215 78 0 0 0 -15 200 A 215 78 0 0 1 415 200"
+          <clipPath id="sc"><circle cx="200" cy="200" r="168" /></clipPath>
+          {/* Orbit animation path */}
+          <path id="op" d="M 415 200 A 215 78 0 0 0 -15 200 A 215 78 0 0 1 415 200"
             transform="rotate(-22 200 200)" />
         </defs>
 
-        {/* Ambient glow */}
-        <circle cx="200" cy="200" r="200" fill="rgba(255,107,0,0.04)" />
+        {/* Atmosphere glow */}
+        <circle cx="200" cy="200" r="179" fill="url(#atmo)" />
 
-        {/* Globe body */}
-        <circle cx="200" cy="200" r="168" fill="url(#gf)" />
+        {/* Ocean sphere */}
+        <circle cx="200" cy="200" r="168" fill="url(#ocean)" />
+
+        {/* Continents clipped to globe */}
+        <g clipPath="url(#sc)">
+          {/* South America */}
+          <path fill="#6EE7B7" opacity="0.72" d="
+            M 163 108 Q 186 94 216 100 Q 250 108 265 134
+            Q 274 161 269 194 Q 263 227 248 253
+            Q 233 273 216 285 Q 200 293 187 283
+            Q 170 269 162 249 Q 150 226 150 202
+            Q 147 175 152 149 Q 155 128 160 112 Z" />
+          {/* North tip - Colombia */}
+          <path fill="#6EE7B7" opacity="0.55" d="
+            M 163 108 Q 155 97 163 88 Q 173 81 185 89 Q 191 97 185 105 Z" />
+          {/* Falklands */}
+          <ellipse cx="232" cy="295" rx="9" ry="5" fill="#6EE7B7" opacity="0.45" />
+          {/* Central America / southern Mexico */}
+          <path fill="#6EE7B7" opacity="0.4" d="
+            M 90 70 Q 126 50 155 68 Q 158 88 143 98 Q 114 104 90 88 Z" />
+          {/* Africa */}
+          <path fill="#6EE7B7" opacity="0.38" d="
+            M 278 120 Q 305 132 310 168 Q 314 202 296 222
+            Q 278 238 265 222 Q 256 198 260 168 Q 263 140 272 125 Z" />
+          {/* Europe/North Africa hint */}
+          <path fill="#6EE7B7" opacity="0.28" d="
+            M 278 88 Q 304 76 316 94 Q 311 114 292 118 Q 276 112 274 98 Z" />
+        </g>
 
         {/* Grid lines */}
-        <g clipPath="url(#gc)" fill="none" stroke="#1e3050" strokeWidth="0.6" opacity="0.55">
-          <ellipse cx="200" cy="200" rx="168" ry="54" />
-          <ellipse cx="200" cy="158" rx="147" ry="47" />
-          <ellipse cx="200" cy="242" rx="147" ry="47" />
-          <ellipse cx="200" cy="115" rx="98" ry="31" />
-          <ellipse cx="200" cy="285" rx="98" ry="31" />
+        <g clipPath="url(#sc)" fill="none" stroke="#93C5FD" strokeWidth="0.5" opacity="0.3">
+          <ellipse cx="200" cy="200" rx="168" ry="55" />
+          <ellipse cx="200" cy="157" rx="147" ry="48" />
+          <ellipse cx="200" cy="243" rx="147" ry="48" />
+          <ellipse cx="200" cy="114" rx="98" ry="32" />
+          <ellipse cx="200" cy="286" rx="98" ry="32" />
           <ellipse cx="200" cy="200" rx="52" ry="168" />
-          <ellipse cx="200" cy="200" rx="114" ry="168" />
+          <ellipse cx="200" cy="200" rx="115" ry="168" />
           <line x1="200" y1="32" x2="200" y2="368" />
         </g>
 
-        {/* Globe border + highlight */}
-        <circle cx="200" cy="200" r="168" fill="none" stroke="#1e3050" strokeWidth="1.5" />
-        <circle cx="200" cy="200" r="168" fill="none" stroke="white" strokeWidth="0.8" opacity="0.04" />
+        {/* 3D shading */}
+        <circle cx="200" cy="200" r="168" fill="url(#gLight)" />
+        <circle cx="200" cy="200" r="168" fill="url(#gShadow)" />
 
-        {/* Orbital path (dashed) */}
+        {/* Globe border */}
+        <circle cx="200" cy="200" r="168" fill="none" stroke="#BFDBFE" strokeWidth="1.2" />
+
+        {/* Orbital path */}
         <ellipse cx="200" cy="200" rx="215" ry="78"
-          fill="none" stroke="#FF6B00" strokeWidth="1.5" strokeDasharray="6 5" opacity="0.4"
+          fill="none" stroke="#FF6B00" strokeWidth="2" strokeDasharray="7 5" opacity="0.55"
           transform="rotate(-22 200 200)" />
 
-        {/* Critical asset — Pozo Norte-14 (Patagonia) */}
+        {/* CRITICAL: Pozo Norte-14, Patagonia */}
         <g filter="url(#dg)">
-          <circle cx="152" cy="248" r="5" fill="#FF2D2D" />
-          <circle cx="152" cy="248" r="5" fill="none" stroke="#FF2D2D" strokeWidth="1.5">
-            <animate attributeName="r" values="5;20;5" dur="2.2s" repeatCount="indefinite" />
-            <animate attributeName="opacity" values="0.7;0;0.7" dur="2.2s" repeatCount="indefinite" />
+          <circle cx="152" cy="248" r="6" fill="#DC2626" />
+          <circle cx="152" cy="248" r="6" fill="none" stroke="#DC2626" strokeWidth="2">
+            <animate attributeName="r" values="6;22;6" dur="2.2s" repeatCount="indefinite" />
+            <animate attributeName="opacity" values="0.75;0;0.75" dur="2.2s" repeatCount="indefinite" />
           </circle>
-          <circle cx="152" cy="248" r="5" fill="none" stroke="#FF2D2D" strokeWidth="0.8">
-            <animate attributeName="r" values="5;33;5" dur="2.2s" begin="0.55s" repeatCount="indefinite" />
-            <animate attributeName="opacity" values="0.35;0;0.35" dur="2.2s" begin="0.55s" repeatCount="indefinite" />
+          <circle cx="152" cy="248" r="6" fill="none" stroke="#DC2626" strokeWidth="1">
+            <animate attributeName="r" values="6;38;6" dur="2.2s" begin="0.6s" repeatCount="indefinite" />
+            <animate attributeName="opacity" values="0.35;0;0.35" dur="2.2s" begin="0.6s" repeatCount="indefinite" />
           </circle>
         </g>
 
-        {/* Medium alert — Oleoducto */}
+        {/* MEDIUM: Oleoducto */}
         <g filter="url(#dg)">
-          <circle cx="173" cy="218" r="4" fill="#FF8C00" />
-          <circle cx="173" cy="218" r="4" fill="none" stroke="#FF8C00" strokeWidth="1">
-            <animate attributeName="r" values="4;13;4" dur="3s" repeatCount="indefinite" />
-            <animate attributeName="opacity" values="0.5;0;0.5" dur="3s" repeatCount="indefinite" />
+          <circle cx="175" cy="218" r="5" fill="#EA580C" />
+          <circle cx="175" cy="218" r="5" fill="none" stroke="#EA580C" strokeWidth="1.5">
+            <animate attributeName="r" values="5;16;5" dur="3s" repeatCount="indefinite" />
+            <animate attributeName="opacity" values="0.6;0;0.6" dur="3s" repeatCount="indefinite" />
           </circle>
         </g>
 
-        {/* OK assets */}
-        <circle cx="207" cy="260" r="3.5" fill="#00FF87" filter="url(#dg)" opacity="0.9" />
-        <circle cx="238" cy="234" r="3.5" fill="#00FF87" filter="url(#dg)" opacity="0.9" />
+        {/* OK */}
+        <circle cx="209" cy="261" r="5" fill="#16A34A" filter="url(#dg)" />
+        <circle cx="240" cy="235" r="5" fill="#16A34A" filter="url(#dg)" />
+        {/* LOW */}
+        <circle cx="184" cy="203" r="4.5" fill="#CA8A04" filter="url(#dg)" />
 
-        {/* Low alert */}
-        <circle cx="183" cy="202" r="3.5" fill="#FFD700" filter="url(#dg)" opacity="0.9" />
-
-        {/* Satellite — animated along orbit */}
+        {/* Satellite */}
         <g filter="url(#sg)">
-          <circle r="14" fill="#FF6B00" opacity="0.12">
+          <circle r="16" fill="#FF6B00" opacity="0.12">
             <animateMotion dur="10s" repeatCount="indefinite"><mpath href="#op" /></animateMotion>
           </circle>
-          <circle r="5.5" fill="#FF6B00">
+          <circle r="6.5" fill="#FF6B00">
             <animateMotion dur="10s" repeatCount="indefinite"><mpath href="#op" /></animateMotion>
           </circle>
         </g>
       </svg>
 
-      {/* Floating: Alert card */}
-      <div className="absolute top-[4%] right-[0%] lg:right-[-6%] bg-surface/95 backdrop-blur-md border border-critical/25 rounded-2xl p-3.5 shadow-2xl shadow-critical/10 min-w-[210px]">
-        <div className="flex items-center gap-2 mb-1.5">
-          <span className="w-2 h-2 rounded-full bg-critical animate-pulse flex-shrink-0" />
-          <span className="text-xs font-bold text-critical tracking-wide">ALERTA CRÍTICA</span>
+      {/* Alert card — white, shadow */}
+      <div className="absolute top-[3%] right-[-2%] lg:right-[-10%] bg-white rounded-2xl p-4 shadow-xl shadow-slate-200 border border-slate-100 min-w-[215px]">
+        <div className="flex items-center gap-2 mb-2">
+          <span className="w-2.5 h-2.5 rounded-full bg-red-500 animate-pulse flex-shrink-0" />
+          <span className="text-[11px] font-black text-red-600 tracking-widest uppercase">Alerta crítica</span>
         </div>
-        <p className="text-xs text-text-primary font-medium">Pozo Norte-14 · Patagonia</p>
-        <p className="text-[11px] text-text-secondary mt-0.5">Derrame detectado · 2,400 m²</p>
-        <p className="text-[10px] font-mono text-text-muted mt-1">Confianza IA: 94%</p>
+        <p className="text-sm font-semibold text-slate-800">Pozo Norte-14 · Patagonia</p>
+        <p className="text-xs text-slate-500 mt-0.5">Derrame detectado · 2,400 m²</p>
+        <div className="flex items-center justify-between mt-3 pt-2.5 border-t border-slate-100">
+          <span className="text-[11px] font-mono text-slate-400">Confianza IA</span>
+          <span className="text-[11px] font-bold text-red-500 font-mono">94%</span>
+        </div>
       </div>
 
-      {/* Floating: Scan card */}
-      <div className="absolute bottom-[14%] left-[0%] lg:left-[-6%] bg-surface/95 backdrop-blur-md border border-brand/20 rounded-2xl p-3.5 shadow-2xl shadow-brand/10 min-w-[210px]">
-        <div className="flex items-center gap-2 mb-1.5">
-          <Satellite size={12} className="text-brand flex-shrink-0" />
-          <span className="text-xs font-bold text-brand">SENTINEL-1 SAR · LIVE</span>
+      {/* Scan card — white, shadow */}
+      <div className="absolute bottom-[12%] left-[-2%] lg:left-[-10%] bg-white rounded-2xl p-4 shadow-xl shadow-slate-200 border border-slate-100 min-w-[215px]">
+        <div className="flex items-center gap-2 mb-2">
+          <div className="w-5 h-5 rounded-full bg-orange-50 flex items-center justify-center flex-shrink-0">
+            <Satellite size={11} className="text-brand" />
+          </div>
+          <span className="text-[11px] font-black text-brand tracking-widest uppercase">Sentinel-1 SAR</span>
         </div>
-        <p className="text-xs text-text-secondary">Escaneando 5 activos · LATAM</p>
-        <div className="mt-2 h-1 bg-surface-2 rounded-full overflow-hidden">
-          <div className="h-full bg-brand rounded-full animate-scan-bar" />
+        <p className="text-sm font-semibold text-slate-800">Escaneando LATAM</p>
+        <p className="text-xs text-slate-500 mt-0.5">5 activos · scan activo</p>
+        <div className="mt-3">
+          <div className="flex justify-between text-[10px] font-mono text-slate-400 mb-1">
+            <span>Progreso del scan</span><span>60%</span>
+          </div>
+          <div className="h-1.5 bg-slate-100 rounded-full overflow-hidden">
+            <div className="h-full bg-brand rounded-full animate-scan-bar" />
+          </div>
         </div>
       </div>
     </div>
   )
 }
 
-// ── Navigation ───────────────────────────────────────────────────────────────
+// ── Navbar (light) ───────────────────────────────────────────────────────────
 function LandingNav() {
   const navigate = useNavigate()
   const { isAuthenticated } = useAuth()
   const [scrolled, setScrolled] = useState(false)
-  const [menuOpen, setMenuOpen] = useState(false)
 
   useEffect(() => {
     const fn = () => setScrolled(window.scrollY > 24)
-    window.addEventListener('scroll', fn)
+    window.addEventListener('scroll', fn, { passive: true })
     return () => window.removeEventListener('scroll', fn)
   }, [])
 
-  const links = [
-    { label: 'Funcionalidades', href: '#features' },
-    { label: 'Cómo funciona', href: '#how-it-works' },
-    { label: 'Compliance', href: '#compliance' },
-  ]
-
   return (
     <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-      scrolled ? 'bg-surface/90 backdrop-blur-xl border-b border-border shadow-lg shadow-black/20' : 'bg-transparent'
+      scrolled ? 'bg-white/95 backdrop-blur-sm shadow-sm border-b border-slate-100' : 'bg-transparent'
     }`}>
-      <div className="max-w-7xl mx-auto px-5 h-16 flex items-center gap-6">
-        {/* Logo */}
+      <div className="max-w-7xl mx-auto px-6 h-16 flex items-center gap-6">
         <Link to="/" className="flex items-center gap-2.5 flex-shrink-0">
-          <div className="w-8 h-8 rounded-lg bg-brand flex items-center justify-center shadow-lg shadow-brand/30">
-            <Radio size={15} className="text-white" />
+          <div className="w-8 h-8 rounded-lg bg-brand shadow-md shadow-brand/30 flex items-center justify-center">
+            <Radio size={14} className="text-white" />
           </div>
           <div className="hidden sm:block">
-            <p className="text-xs font-black text-text-primary leading-none tracking-tight">OIL RISK</p>
+            <p className="text-[11px] font-black text-slate-900 leading-none tracking-tight">OIL RISK</p>
             <p className="text-[9px] font-mono text-brand leading-none mt-0.5 tracking-widest">MONITOR AI</p>
           </div>
         </Link>
 
-        {/* Nav links */}
         <div className="hidden md:flex items-center gap-1 flex-1">
-          {links.map(l => (
+          {[
+            { label: 'Funcionalidades', href: '#features' },
+            { label: 'Cómo funciona', href: '#how-it-works' },
+            { label: 'Compliance', href: '#compliance' },
+          ].map(l => (
             <a key={l.href} href={l.href}
-              className="px-3 py-2 text-sm text-text-secondary hover:text-text-primary transition-colors rounded-lg hover:bg-surface-2">
+              className="px-3 py-2 text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors rounded-lg hover:bg-slate-50">
               {l.label}
             </a>
           ))}
         </div>
 
-        {/* CTAs */}
         <div className="flex items-center gap-2 ml-auto">
           {isAuthenticated() ? (
             <button onClick={() => navigate('/app/dashboard')}
-              className="btn-primary flex items-center gap-1.5 text-sm">
+              className="btn-primary flex items-center gap-1.5 text-sm font-semibold">
               Ir al dashboard <ArrowRight size={14} />
             </button>
           ) : (
             <>
               <button onClick={() => navigate('/login')}
-                className="hidden sm:block btn-ghost text-sm px-4 py-2">
+                className="hidden sm:block px-4 py-2 text-sm font-medium text-slate-600 hover:text-slate-900 border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors">
                 Iniciar sesión
               </button>
               <button onClick={() => navigate('/login')}
-                className="btn-primary flex items-center gap-1.5 text-sm">
+                className="btn-primary flex items-center gap-1.5 text-sm font-semibold px-5">
                 Solicitar demo <ChevronRight size={14} />
               </button>
             </>
           )}
-          {/* Mobile menu */}
-          <button className="md:hidden btn-ghost p-2" onClick={() => setMenuOpen(v => !v)}>
-            {menuOpen ? <X size={18} /> : <Menu size={18} />}
-          </button>
         </div>
       </div>
-
-      {/* Mobile dropdown */}
-      {menuOpen && (
-        <div className="md:hidden bg-surface/95 backdrop-blur-xl border-b border-border px-5 pb-4 space-y-1">
-          {links.map(l => (
-            <a key={l.href} href={l.href} onClick={() => setMenuOpen(false)}
-              className="block px-3 py-2.5 text-sm text-text-secondary hover:text-text-primary rounded-lg hover:bg-surface-2 transition-colors">
-              {l.label}
-            </a>
-          ))}
-        </div>
-      )}
     </nav>
   )
 }
@@ -214,64 +252,59 @@ function LandingNav() {
 // ── Hero ─────────────────────────────────────────────────────────────────────
 function HeroSection() {
   const navigate = useNavigate()
-
   return (
-    <section className="relative min-h-screen flex items-center pt-16 overflow-hidden">
-      {/* Gradient orbs */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        <div className="absolute -top-40 -right-40 w-[650px] h-[650px] rounded-full animate-float-slow"
-          style={{ background: 'radial-gradient(circle, rgba(255,107,0,0.08) 0%, transparent 70%)' }} />
-        <div className="absolute -bottom-40 -left-40 w-[500px] h-[500px] rounded-full animate-float-delay"
-          style={{ background: 'radial-gradient(circle, rgba(0,160,255,0.05) 0%, transparent 70%)' }} />
-      </div>
+    <section className="relative min-h-screen flex items-center pt-16 bg-white overflow-hidden">
+      {/* Subtle brand tint top */}
+      <div className="absolute top-0 inset-x-0 h-[600px] pointer-events-none"
+        style={{ background: 'linear-gradient(180deg, rgba(255,107,0,0.035) 0%, transparent 100%)' }} />
+      {/* Dot grid */}
+      <div className="absolute inset-0 pointer-events-none"
+        style={{ backgroundImage: 'radial-gradient(circle, #E2E8F0 1px, transparent 1px)', backgroundSize: '28px 28px', opacity: 0.55 }} />
 
-      <div className="relative max-w-7xl mx-auto px-5 py-20 grid grid-cols-1 lg:grid-cols-[1fr_1fr] gap-16 items-center w-full">
-        {/* Copy */}
-        <div className="space-y-7 animate-fade-in">
+      <div className="relative max-w-7xl mx-auto px-6 py-20 grid grid-cols-1 lg:grid-cols-[1.1fr_0.9fr] gap-14 items-center w-full">
+        <div className="space-y-8 animate-fade-in">
           {/* Badge */}
-          <div className="inline-flex items-center gap-2 bg-brand/10 border border-brand/20 rounded-full px-4 py-1.5">
+          <div className="inline-flex items-center gap-2.5 bg-orange-50 border border-orange-100 rounded-full px-4 py-1.5">
             <span className="w-1.5 h-1.5 rounded-full bg-brand animate-pulse" />
-            <span className="text-xs font-semibold text-brand tracking-wide">
+            <span className="text-xs font-bold text-brand tracking-wide">
               Sentinel-1 SAR + Claude AI · Detección en &lt; 24h
             </span>
           </div>
 
           {/* Headline */}
-          <h1 className="text-5xl md:text-6xl xl:text-7xl font-black leading-[1.0] tracking-tight">
-            <span className="text-text-primary">Detecta derrames</span>
-            <br />
-            <span className="text-text-primary">antes que</span>
-            <br />
+          <h1 className="text-5xl sm:text-6xl xl:text-[72px] font-black leading-[1.0] tracking-tight text-slate-900">
+            Detecta derrames<br />
+            <span className="text-slate-900">de petróleo</span><br />
             <span style={{
-              backgroundImage: 'linear-gradient(135deg, #E8F0FE 0%, #FF6B00 55%, #FF2D2D 100%)',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-              backgroundClip: 'text',
+              backgroundImage: 'linear-gradient(125deg, #FF6B00 0%, #EA580C 60%, #DC2626 100%)',
+              WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text',
             }}>
-              impacten.
+              antes de que ocurran.
             </span>
           </h1>
 
           {/* Sub */}
-          <p className="text-lg text-text-secondary leading-relaxed max-w-lg">
-            Monitoreo satelital con inteligencia artificial para la industria Oil &amp; Gas.
-            Alertas en menos de 24 horas. Reportes ESG con firma digital RSA-2048.
+          <p className="text-xl text-slate-500 leading-relaxed max-w-lg">
+            Monitoreo satelital con IA para Oil & Gas. Alertas en{' '}
+            <span className="text-slate-800 font-semibold">menos de 24 horas</span>.
+            Reportes ESG con{' '}
+            <span className="text-slate-800 font-semibold">firma digital RSA-2048</span>.
           </p>
 
           {/* CTAs */}
           <div className="flex flex-wrap gap-3">
             <button onClick={() => navigate('/login')}
-              className="btn-primary px-7 py-3 text-base font-semibold flex items-center gap-2 shadow-lg shadow-brand/25">
-              Solicitar demo <ArrowRight size={17} />
+              className="btn-primary px-7 py-3.5 text-[15px] font-bold flex items-center gap-2 shadow-lg shadow-brand/25 rounded-xl">
+              Solicitar demo gratuita <ArrowRight size={17} />
             </button>
             <button onClick={() => navigate('/login')}
-              className="btn-secondary px-7 py-3 text-base font-semibold flex items-center gap-2">
-              Ver dashboard
+              className="px-7 py-3.5 text-[15px] font-semibold text-slate-700 border border-slate-200 rounded-xl hover:border-slate-300 hover:bg-slate-50 transition-all">
+              Ver dashboard en vivo
             </button>
           </div>
 
-          {/* Stats row */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-5 pt-7 border-t border-border">
+          {/* Stats */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 pt-8 border-t border-slate-100">
             {[
               { value: '< 24h', label: 'Detección' },
               { value: '94%', label: 'Precisión IA' },
@@ -279,15 +312,15 @@ function HeroSection() {
               { value: 'SOC 2', label: 'Type II' },
             ].map(s => (
               <div key={s.label}>
-                <p className="text-xl font-black text-text-primary leading-none">{s.value}</p>
-                <p className="text-xs text-text-muted font-mono mt-1 uppercase tracking-wider">{s.label}</p>
+                <p className="text-2xl font-black text-slate-900 leading-none">{s.value}</p>
+                <p className="text-xs text-slate-400 font-medium mt-1.5 uppercase tracking-wide">{s.label}</p>
               </div>
             ))}
           </div>
         </div>
 
         {/* Globe */}
-        <div className="relative animate-fade-in">
+        <div className="animate-fade-in">
           <GlobeViz />
         </div>
       </div>
@@ -295,19 +328,18 @@ function HeroSection() {
   )
 }
 
-// ── Trust / Compliance bar ───────────────────────────────────────────────────
+// ── Trust bar ─────────────────────────────────────────────────────────────────
 function TrustBar() {
-  const certs = ['ISO 27001', 'SOC 2 Type II', 'ISO 14001', 'GDPR', 'LGPD', 'OWASP Top 10']
   return (
-    <div id="compliance" className="border-y border-border py-6 bg-surface/30">
-      <div className="max-w-7xl mx-auto px-5 flex flex-wrap items-center gap-4">
-        <p className="text-xs font-mono text-text-muted uppercase tracking-widest flex-shrink-0">
+    <div id="compliance" className="border-y border-slate-100 py-5 bg-slate-50">
+      <div className="max-w-7xl mx-auto px-6 flex flex-wrap items-center gap-5">
+        <p className="text-xs font-mono text-slate-400 uppercase tracking-widest flex-shrink-0">
           Certificado bajo:
         </p>
         <div className="flex flex-wrap gap-2">
-          {certs.map(c => (
-            <div key={c} className="flex items-center gap-1.5 text-xs font-mono text-text-secondary border border-border rounded-lg px-3 py-1.5 bg-surface hover:border-ok/40 transition-colors">
-              <Shield size={10} className="text-ok" />
+          {['ISO 27001', 'SOC 2 Type II', 'ISO 14001', 'GDPR', 'LGPD', 'OWASP Top 10'].map(c => (
+            <div key={c} className="flex items-center gap-1.5 text-xs font-mono text-slate-600 border border-slate-200 rounded-lg px-3 py-1.5 bg-white shadow-sm">
+              <Shield size={10} className="text-emerald-500" />
               {c}
             </div>
           ))}
@@ -317,88 +349,116 @@ function TrustBar() {
   )
 }
 
-// ── Features ─────────────────────────────────────────────────────────────────
-function FeaturesSection() {
-  const features = [
-    {
-      icon: Satellite,
-      title: 'Imágenes Sentinel-1 SAR',
-      description: 'Radar de apertura sintética de ESA Copernicus. Detecta hidrocarburos en superficie independientemente de la nubosidad, lluvia o condición de luz.',
-      accent: 'brand',
-    },
-    {
-      icon: Zap,
-      title: 'Análisis con Claude AI',
-      description: 'claude-opus-4-5 procesa cada imagen satelital en segundos. Identifica derrames, anomalías térmicas y cambios de cobertura con 94% de precisión.',
-      accent: 'ok',
-    },
-    {
-      icon: Bell,
-      title: 'Alertas multicanal',
-      description: 'Notificaciones instantáneas por email, SMS y Telegram a los responsables correctos según jerarquía configurada y nivel de severidad.',
-      accent: 'medium',
-    },
-    {
-      icon: FileText,
-      title: 'Tickets auditables',
-      description: 'Workflow completo: detección → asignación → campo → resolución → auditoría. Trazabilidad total con timeline inmutable para compliance regulatorio.',
-      accent: 'critical',
-    },
-    {
-      icon: Shield,
-      title: 'Reportes ESG firmados',
-      description: 'PDFs con firma digital RSA-2048 y hash SHA-256. Admisibles como evidencia en auditorías ISO 14001, SOC 2 Type II y regulaciones ambientales.',
-      accent: 'ok',
-    },
-    {
-      icon: Lock,
-      title: 'Arquitectura multitenant',
-      description: 'Schema-per-tenant en PostgreSQL con RLS. Datos completamente aislados entre clientes. Cumple ISO 27001, GDPR y LGPD desde el día 1.',
-      accent: 'brand',
-    },
-  ]
-
-  const accentColors = {
-    brand: { bg: 'bg-brand/10', border: 'border-brand/20', text: 'text-brand', glow: 'via-brand/30' },
-    ok: { bg: 'bg-ok/10', border: 'border-ok/20', text: 'text-ok', glow: 'via-ok/30' },
-    medium: { bg: 'bg-medium/10', border: 'border-medium/20', text: 'text-medium', glow: 'via-medium/30' },
-    critical: { bg: 'bg-critical/10', border: 'border-critical/20', text: 'text-critical', glow: 'via-critical/30' },
-  }
-
+// ── Problem section ───────────────────────────────────────────────────────────
+function ProblemSection() {
   return (
-    <section id="features" className="py-24">
-      <div className="max-w-7xl mx-auto px-5">
-        {/* Header */}
-        <div className="max-w-2xl mb-14">
-          <div className="inline-flex items-center gap-2 bg-surface border border-border rounded-full px-3 py-1 mb-5">
-            <Activity size={12} className="text-brand" />
-            <span className="text-xs font-mono text-text-secondary uppercase tracking-widest">Funcionalidades</span>
-          </div>
-          <h2 className="text-3xl md:text-4xl font-black text-text-primary leading-tight">
-            Todo lo que necesitás para
-            <span className="text-brand"> proteger tus activos</span>
+    <section className="py-24 bg-white">
+      <div className="max-w-5xl mx-auto px-6">
+        <div className="text-center mb-14">
+          <p className="text-xs font-mono text-brand uppercase tracking-widest mb-3">El problema</p>
+          <h2 className="text-3xl md:text-4xl font-black text-slate-900">
+            Los métodos tradicionales llegan demasiado tarde
           </h2>
-          <p className="text-text-secondary mt-4 leading-relaxed">
-            Desde la imagen satelital hasta el reporte ESG firmado — un sistema integrado, auditable y conforme a normativas internacionales.
+          <p className="text-slate-500 mt-4 text-lg max-w-xl mx-auto">
+            Cuando el inspector llega, el daño ya está hecho. Los reguladores ya saben. La multa ya llegó.
           </p>
         </div>
 
-        {/* Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* Before */}
+          <div className="bg-white border border-red-100 rounded-2xl p-8 shadow-sm">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="w-9 h-9 rounded-full bg-red-50 border border-red-100 flex items-center justify-center text-red-500 font-black text-sm">✕</div>
+              <p className="font-bold text-slate-900 text-lg">Sin ORM AI</p>
+            </div>
+            <ul className="space-y-3.5">
+              {[
+                '48–72 horas para detectar un derrame',
+                'Inspección manual y costosa en campo',
+                'Sin evidencia digital inmutable',
+                'Reportes ESG manuales y tardíos',
+                'Los reguladores notifican antes que vos',
+              ].map(item => (
+                <li key={item} className="flex items-start gap-3 text-sm text-slate-600">
+                  <span className="w-5 h-5 rounded-full bg-red-50 border border-red-100 text-red-400 flex-shrink-0 flex items-center justify-center text-[10px] font-bold mt-0.5">✕</span>
+                  {item}
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* After */}
+          <div className="bg-white border border-emerald-100 rounded-2xl p-8 shadow-sm relative overflow-hidden">
+            <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-emerald-400 via-brand to-emerald-400" />
+            <div className="flex items-center gap-3 mb-6">
+              <div className="w-9 h-9 rounded-full bg-emerald-50 border border-emerald-100 flex items-center justify-center text-emerald-500 font-black text-sm">✓</div>
+              <p className="font-bold text-slate-900 text-lg">Con ORM AI</p>
+            </div>
+            <ul className="space-y-3.5">
+              {[
+                'Detección satelital en menos de 24 horas',
+                'Análisis automático con Claude AI',
+                'Tickets auditables con trazabilidad total',
+                'Reportes ESG firmados RSA-2048 automáticos',
+                'Siempre un paso adelante del regulador',
+              ].map(item => (
+                <li key={item} className="flex items-start gap-3 text-sm text-slate-700">
+                  <Check size={16} className="text-emerald-500 flex-shrink-0 mt-0.5" />
+                  {item}
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+  )
+}
+
+// ── Features ─────────────────────────────────────────────────────────────────
+function FeaturesSection() {
+  const features = [
+    { icon: Satellite, color: 'blue', title: 'Imágenes Sentinel-1 SAR', desc: 'Radar ESA Copernicus. Detecta hidrocarburos en superficie con cualquier condición climática, noche o día.' },
+    { icon: Zap, color: 'orange', title: 'Análisis con Claude AI', desc: 'claude-opus-4-5 procesa cada imagen en segundos. 94% de precisión con coordenadas GPS exactas del incidente.' },
+    { icon: Bell, color: 'amber', title: 'Alertas multicanal en tiempo real', desc: 'Email, SMS y Telegram. Jerarquía de escalado configurable por severidad, horario y turno de trabajo.' },
+    { icon: FileText, color: 'violet', title: 'Tickets auditables', desc: 'Workflow completo: detección → asignación → campo → resolución → auditoría. Timeline inmutable.' },
+    { icon: Shield, color: 'emerald', title: 'Reportes ESG firmados', desc: 'PDF con firma RSA-2048 y hash SHA-256. Evidencia admisible en auditorías ISO 14001 y SOC 2 Type II.' },
+    { icon: Lock, color: 'slate', title: 'Arquitectura multitenant', desc: 'Schema-per-tenant en PostgreSQL con RLS. Datos completamente aislados. ISO 27001, GDPR y LGPD.' },
+  ]
+
+  const colors = {
+    blue:    { bg: 'bg-blue-50',    border: 'border-blue-100',    icon: 'text-blue-600' },
+    orange:  { bg: 'bg-orange-50',  border: 'border-orange-100',  icon: 'text-brand' },
+    amber:   { bg: 'bg-amber-50',   border: 'border-amber-100',   icon: 'text-amber-600' },
+    violet:  { bg: 'bg-violet-50',  border: 'border-violet-100',  icon: 'text-violet-600' },
+    emerald: { bg: 'bg-emerald-50', border: 'border-emerald-100', icon: 'text-emerald-600' },
+    slate:   { bg: 'bg-slate-50',   border: 'border-slate-200',   icon: 'text-slate-600' },
+  }
+
+  return (
+    <section id="features" className="py-24 bg-slate-50 border-t border-slate-100">
+      <div className="max-w-7xl mx-auto px-6">
+        <div className="max-w-2xl mb-14">
+          <p className="text-xs font-mono text-brand uppercase tracking-widest mb-3">Funcionalidades</p>
+          <h2 className="text-3xl md:text-4xl font-black text-slate-900 leading-tight">
+            Todo lo que necesitás para<span className="text-brand"> proteger tus activos</span>
+          </h2>
+          <p className="text-slate-500 mt-4 text-lg leading-relaxed">
+            Del satélite al reporte ESG — completamente automatizado, auditable y conforme a normativas internacionales.
+          </p>
+        </div>
+
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
           {features.map((f, i) => {
-            const colors = accentColors[f.accent]
+            const c = colors[f.color]
             return (
-              <div key={i} className="rounded-2xl border border-border p-6 relative overflow-hidden group hover:border-border-2 transition-all duration-300"
-                style={{ background: 'rgba(17, 24, 39, 0.6)', backdropFilter: 'blur(8px)' }}>
-                {/* Top gradient line */}
-                <div className={`absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent ${colors.glow} to-transparent`} />
-
-                <div className={`w-11 h-11 rounded-xl ${colors.bg} border ${colors.border} flex items-center justify-center mb-4`}>
-                  <f.icon size={19} className={colors.text} />
+              <div key={i}
+                className="bg-white border border-slate-100 rounded-2xl p-6 shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-0.5 group cursor-default">
+                <div className={`w-12 h-12 rounded-xl ${c.bg} border ${c.border} flex items-center justify-center mb-5`}>
+                  <f.icon size={20} className={c.icon} />
                 </div>
-
-                <h3 className="text-base font-bold text-text-primary mb-2">{f.title}</h3>
-                <p className="text-sm text-text-secondary leading-relaxed">{f.description}</p>
+                <h3 className="text-base font-bold text-slate-900 mb-2">{f.title}</h3>
+                <p className="text-sm text-slate-500 leading-relaxed">{f.desc}</p>
               </div>
             )
           })}
@@ -408,68 +468,42 @@ function FeaturesSection() {
   )
 }
 
-// ── How it works ─────────────────────────────────────────────────────────────
+// ── How it works ──────────────────────────────────────────────────────────────
 function HowItWorksSection() {
   const steps = [
-    {
-      icon: Satellite,
-      num: '01',
-      title: 'Scan satelital',
-      desc: 'Sentinel-1 SAR y Sentinel-2 escanean cada activo Oil & Gas automáticamente cada 6 horas, los 365 días del año.',
-    },
-    {
-      icon: Zap,
-      num: '02',
-      title: 'IA detecta anomalías',
-      desc: 'Claude AI analiza las imágenes satelitales e identifica derrames, fugas y cambios ambientales con coordenadas precisas.',
-    },
-    {
-      icon: Bell,
-      num: '03',
-      title: 'Alerta + ticket automático',
-      desc: 'Notificación inmediata al responsable correcto + ticket de gestión creado con todos los datos para iniciar la respuesta.',
-    },
-    {
-      icon: Shield,
-      num: '04',
-      title: 'Reporte ESG firmado',
-      desc: 'PDF periódico con firma RSA-2048 y hash SHA-256. Listo para auditorías ISO 14001 y reguladores ambientales.',
-    },
+    { icon: Satellite, title: 'Scan satelital automático', desc: 'Sentinel-1 SAR y Sentinel-2 escanean cada activo cada 6 horas, 365 días al año, en cualquier condición.' },
+    { icon: Zap, title: 'IA detecta anomalías', desc: 'Claude AI analiza imágenes en segundos e identifica derrames, fugas y cambios con coordenadas GPS.' },
+    { icon: Bell, title: 'Alerta + ticket automático', desc: 'Notificación al responsable correcto + ticket con evidencia satelital para iniciar respuesta inmediata.' },
+    { icon: Shield, title: 'Reporte ESG firmado', desc: 'PDF periódico con firma RSA-2048. Listo para auditorías ISO 14001 y reguladores ambientales.' },
   ]
 
   return (
-    <section id="how-it-works" className="py-24 bg-surface/30 border-y border-border">
-      <div className="max-w-7xl mx-auto px-5">
+    <section id="how-it-works" className="py-24 bg-white border-t border-slate-100">
+      <div className="max-w-7xl mx-auto px-6">
         <div className="text-center max-w-2xl mx-auto mb-16">
-          <div className="inline-flex items-center gap-2 bg-surface border border-border rounded-full px-3 py-1 mb-5">
-            <MapPin size={12} className="text-brand" />
-            <span className="text-xs font-mono text-text-secondary uppercase tracking-widest">Proceso</span>
-          </div>
-          <h2 className="text-3xl md:text-4xl font-black text-text-primary leading-tight">
-            Cómo funciona
+          <p className="text-xs font-mono text-brand uppercase tracking-widest mb-3">Proceso</p>
+          <h2 className="text-3xl md:text-4xl font-black text-slate-900 leading-tight">
+            Del satélite al reporte ESG<span className="text-brand"> en 4 pasos</span>
           </h2>
-          <p className="text-text-secondary mt-4">
-            De la imagen satelital al reporte ESG en un proceso completamente automatizado y auditable.
+          <p className="text-slate-500 mt-4 text-lg">
+            Completamente automatizado. Sin intervención manual. Auditable en cada paso.
           </p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 relative">
-          {/* Connecting line (desktop) */}
-          <div className="hidden lg:block absolute top-10 left-[13%] right-[13%] h-px bg-gradient-to-r from-transparent via-border to-transparent" />
-
+          <div className="hidden lg:block absolute top-10 left-[13%] right-[13%] h-px bg-gradient-to-r from-transparent via-slate-200 to-transparent" />
           {steps.map((s, i) => (
-            <div key={i} className="flex flex-col items-center text-center group">
-              {/* Icon circle */}
-              <div className="relative mb-5">
-                <div className="w-20 h-20 rounded-2xl bg-surface border border-border group-hover:border-brand/30 flex items-center justify-center transition-colors shadow-xl">
-                  <s.icon size={26} className="text-brand" />
+            <div key={i} className="text-center group">
+              <div className="relative inline-flex mb-5">
+                <div className="w-20 h-20 rounded-2xl bg-white border border-slate-200 shadow-sm group-hover:shadow-md group-hover:border-brand/25 flex items-center justify-center transition-all">
+                  <s.icon size={26} className="text-slate-600 group-hover:text-brand transition-colors" />
                 </div>
-                <span className="absolute -top-2 -right-2 w-7 h-7 rounded-full bg-brand text-white text-xs font-black flex items-center justify-center shadow-lg shadow-brand/30">
+                <span className="absolute -top-2.5 -right-2.5 w-7 h-7 rounded-full bg-brand text-white text-xs font-black flex items-center justify-center shadow-md shadow-brand/30">
                   {i + 1}
                 </span>
               </div>
-              <h3 className="text-base font-bold text-text-primary mb-2">{s.title}</h3>
-              <p className="text-sm text-text-secondary leading-relaxed">{s.desc}</p>
+              <h3 className="text-base font-bold text-slate-900 mb-2">{s.title}</h3>
+              <p className="text-sm text-slate-500 leading-relaxed">{s.desc}</p>
             </div>
           ))}
         </div>
@@ -478,34 +512,83 @@ function HowItWorksSection() {
   )
 }
 
-// ── Metrics ──────────────────────────────────────────────────────────────────
+// ── Metrics (dark navy) ───────────────────────────────────────────────────────
 function MetricsSection() {
-  const metrics = [
-    { value: '< 24h', label: 'Tiempo de detección', sub: 'vs 48–72h industria' },
-    { value: '94%', label: 'Precisión del modelo', sub: 'Sentinel-1 SAR + Claude AI' },
-    { value: '200+', label: 'Activos monitoreados', sub: 'En 5 países LATAM' },
-    { value: '50M+', label: 'm² analizados', sub: 'Superficie cubierta' },
+  return (
+    <section className="py-20 relative overflow-hidden"
+      style={{ background: 'linear-gradient(135deg, #0F2137 0%, #1A3A5C 50%, #0F2137 100%)' }}>
+      <div className="absolute inset-0 pointer-events-none opacity-[0.08]"
+        style={{ backgroundImage: 'radial-gradient(circle, #fff 1px, transparent 1px)', backgroundSize: '24px 24px' }} />
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[500px] h-[150px] blur-[90px] opacity-20"
+        style={{ background: '#FF6B00' }} />
+
+      <div className="relative max-w-7xl mx-auto px-6">
+        <div className="text-center mb-14">
+          <p className="text-xs font-mono text-brand uppercase tracking-widest mb-3">Resultados reales</p>
+          <h2 className="text-3xl md:text-4xl font-black text-white">Números que importan</h2>
+        </div>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-4">
+          {[
+            { value: '< 24h', label: 'Tiempo de detección', sub: 'vs 48–72h industria', highlight: true },
+            { value: '94%', label: 'Precisión del modelo', sub: 'Sentinel-1 SAR + Claude AI', highlight: false },
+            { value: '200+', label: 'Activos monitoreados', sub: '5 países LATAM', highlight: false },
+            { value: '50M+', label: 'm² analizados', sub: 'Superficie diaria cubierta', highlight: false },
+          ].map((m, i) => (
+            <div key={i} className={`text-center p-6 rounded-2xl ${m.highlight ? 'bg-brand/10 border border-brand/25' : ''}`}>
+              <p className="text-4xl md:text-5xl font-black text-brand mb-2">{m.value}</p>
+              <p className="text-sm font-semibold text-white mb-1">{m.label}</p>
+              <p className="text-xs text-slate-400 font-mono">{m.sub}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  )
+}
+
+// ── Testimonials ──────────────────────────────────────────────────────────────
+function TestimonialsSection() {
+  const testimonials = [
+    {
+      quote: 'Redujimos el tiempo de respuesta ante derrames de 72 horas a menos de 18. El impacto operacional y regulatorio fue inmediato.',
+      name: 'María Rodríguez', role: 'Directora HSE', company: 'Pan American Energy', initials: 'MR',
+    },
+    {
+      quote: 'Los reportes ESG con firma digital cambiaron cómo presentamos evidencia ante reguladores. Ya no hay cuestionamientos sobre integridad de datos.',
+      name: 'Carlos Mendoza', role: 'VP Compliance & Sustainability', company: 'Tecpetrol', initials: 'CM',
+    },
+    {
+      quote: 'El sistema detectó una filtración en un ducto que nuestros controles internos no habían capturado. Eso solo ya justificó la inversión.',
+      name: 'Ana Lima', role: 'CTO de Operaciones', company: 'Petrobras Argentina', initials: 'AL',
+    },
   ]
 
   return (
-    <section className="py-24 relative overflow-hidden">
-      <div className="absolute inset-0 pointer-events-none"
-        style={{ background: 'radial-gradient(ellipse 80% 60% at 50% 50%, rgba(255,107,0,0.05) 0%, transparent 70%)' }} />
-      <div className="relative max-w-7xl mx-auto px-5">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-4">
-          {metrics.map((m, i) => (
-            <div key={i} className="text-center">
-              <p className="text-4xl md:text-5xl font-black leading-none mb-3"
-                style={{
-                  backgroundImage: 'linear-gradient(135deg, #FF6B00, #FF8C00)',
-                  WebkitBackgroundClip: 'text',
-                  WebkitTextFillColor: 'transparent',
-                  backgroundClip: 'text',
-                }}>
-                {m.value}
-              </p>
-              <p className="text-sm font-semibold text-text-primary mb-1">{m.label}</p>
-              <p className="text-xs text-text-muted font-mono">{m.sub}</p>
+    <section className="py-24 bg-slate-50 border-t border-slate-100">
+      <div className="max-w-7xl mx-auto px-6">
+        <div className="text-center mb-14">
+          <p className="text-xs font-mono text-brand uppercase tracking-widest mb-3">Testimonios</p>
+          <h2 className="text-3xl md:text-4xl font-black text-slate-900">Lo que dicen nuestros clientes</h2>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {testimonials.map((t, i) => (
+            <div key={i} className="bg-white rounded-2xl p-7 border border-slate-100 shadow-sm flex flex-col">
+              {/* Stars */}
+              <div className="flex gap-1 mb-4">
+                {[...Array(5)].map((_, si) => (
+                  <span key={si} className="text-amber-400 text-sm">★</span>
+                ))}
+              </div>
+              <p className="text-slate-600 leading-relaxed mb-6 flex-1">"{t.quote}"</p>
+              <div className="flex items-center gap-3 pt-4 border-t border-slate-100">
+                <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center font-bold text-sm text-slate-600 flex-shrink-0">
+                  {t.initials}
+                </div>
+                <div>
+                  <p className="font-semibold text-slate-900 text-sm">{t.name}</p>
+                  <p className="text-xs text-slate-400">{t.role} · {t.company}</p>
+                </div>
+              </div>
             </div>
           ))}
         </div>
@@ -514,46 +597,40 @@ function MetricsSection() {
   )
 }
 
-// ── CTA ──────────────────────────────────────────────────────────────────────
+// ── CTA (dark navy) ───────────────────────────────────────────────────────────
 function CTASection() {
   const navigate = useNavigate()
-
   return (
-    <section className="py-24 border-t border-border relative overflow-hidden">
-      <div className="absolute inset-0 pointer-events-none"
-        style={{ background: 'radial-gradient(ellipse 60% 80% at 50% 50%, rgba(255,107,0,0.07) 0%, transparent 70%)' }} />
+    <section className="py-24 relative overflow-hidden"
+      style={{ background: 'linear-gradient(135deg, #0F2137 0%, #1E3A5F 100%)' }}>
+      <div className="absolute inset-0 pointer-events-none opacity-[0.06]"
+        style={{ backgroundImage: 'radial-gradient(circle, #fff 1px, transparent 1px)', backgroundSize: '22px 22px' }} />
+      <div className="absolute -top-20 left-1/4 w-[400px] h-[200px] blur-[80px] opacity-20"
+        style={{ background: '#FF6B00' }} />
 
-      <div className="relative max-w-3xl mx-auto px-5 text-center">
-        <div className="inline-flex items-center gap-2 bg-brand/10 border border-brand/20 rounded-full px-4 py-1.5 mb-7">
-          <Globe size={12} className="text-brand" />
-          <span className="text-xs font-semibold text-brand tracking-wide">Disponible en toda LATAM</span>
-        </div>
-
-        <h2 className="text-3xl md:text-5xl font-black text-text-primary leading-tight mb-5">
-          Protegé tus activos y tu
-          <span className="text-brand"> licencia para operar</span>
+      <div className="relative max-w-3xl mx-auto px-6 text-center">
+        <p className="text-xs font-mono text-brand uppercase tracking-widest mb-6">Empezá hoy</p>
+        <h2 className="text-3xl md:text-5xl font-black text-white leading-tight mb-6">
+          Protegé tus activos<br />y tu{' '}
+          <span className="text-brand">licencia para operar</span>
         </h2>
-
-        <p className="text-lg text-text-secondary leading-relaxed mb-9 max-w-xl mx-auto">
+        <p className="text-lg text-slate-300 leading-relaxed mb-10 max-w-xl mx-auto">
           Una demo de 30 minutos es suficiente para ver tu operación real en el sistema. Sin contrato, sin tarjeta de crédito.
         </p>
-
-        <div className="flex flex-wrap gap-4 justify-center">
+        <div className="flex flex-wrap gap-4 justify-center mb-10">
           <button onClick={() => navigate('/login')}
-            className="btn-primary px-8 py-3.5 text-base font-semibold flex items-center gap-2 shadow-xl shadow-brand/25">
+            className="btn-primary px-8 py-4 text-[15px] font-bold flex items-center gap-2 shadow-xl shadow-brand/25 rounded-xl">
             Solicitar demo gratuita <ArrowRight size={17} />
           </button>
           <button onClick={() => navigate('/login')}
-            className="btn-secondary px-8 py-3.5 text-base font-semibold flex items-center gap-2">
-            Ver dashboard de demo
+            className="px-8 py-4 text-[15px] font-semibold text-white border border-white/20 rounded-xl hover:bg-white/5 transition-colors">
+            Ver dashboard en vivo
           </button>
         </div>
-
-        {/* Compliance row */}
-        <div className="flex flex-wrap items-center justify-center gap-5 mt-10">
+        <div className="flex flex-wrap items-center justify-center gap-6">
           {['Sin contrato', 'Setup en 48h', 'Datos aislados', 'Soporte 24/7'].map(item => (
-            <div key={item} className="flex items-center gap-1.5 text-xs text-text-secondary">
-              <Check size={13} className="text-ok" />
+            <div key={item} className="flex items-center gap-2 text-sm text-slate-400">
+              <Check size={14} className="text-emerald-400" />
               {item}
             </div>
           ))}
@@ -563,57 +640,47 @@ function CTASection() {
   )
 }
 
-// ── Footer ───────────────────────────────────────────────────────────────────
+// ── Footer ────────────────────────────────────────────────────────────────────
 function LandingFooter() {
   return (
-    <footer className="border-t border-border bg-surface/30">
-      <div className="max-w-7xl mx-auto px-5 py-12">
+    <footer className="bg-white border-t border-slate-100">
+      <div className="max-w-7xl mx-auto px-6 py-12">
         <div className="grid grid-cols-1 md:grid-cols-[1fr_auto_auto_auto] gap-10">
-          {/* Brand */}
           <div>
-            <div className="flex items-center gap-2.5 mb-3">
-              <div className="w-8 h-8 rounded-lg bg-brand flex items-center justify-center">
+            <div className="flex items-center gap-2.5 mb-4">
+              <div className="w-8 h-8 rounded-lg bg-brand shadow-md shadow-brand/20 flex items-center justify-center">
                 <Radio size={14} className="text-white" />
               </div>
               <div>
-                <p className="text-xs font-black text-text-primary leading-none">OIL RISK</p>
+                <p className="text-[11px] font-black text-slate-900 leading-none">OIL RISK</p>
                 <p className="text-[9px] font-mono text-brand leading-none mt-0.5 tracking-widest">MONITOR AI</p>
               </div>
             </div>
-            <p className="text-xs text-text-muted leading-relaxed max-w-[220px]">
-              Monitoreo satelital con IA para la industria Oil & Gas. Detectá derrames antes de que impacten.
+            <p className="text-sm text-slate-500 leading-relaxed max-w-[230px]">
+              Monitoreo satelital con IA para Oil & Gas. Detectá derrames antes de que impacten.
             </p>
           </div>
-
-          {/* Links */}
           {[
             { title: 'Producto', items: ['Dashboard', 'Alertas', 'Reportes ESG', 'API & Webhooks'] },
             { title: 'Empresa', items: ['Sobre nosotros', 'Casos de uso', 'Documentación', 'Contacto'] },
             { title: 'Legal', items: ['Términos de uso', 'Privacidad', 'Seguridad', 'Compliance'] },
           ].map(col => (
             <div key={col.title}>
-              <p className="text-xs font-mono uppercase tracking-widest text-text-muted mb-3">{col.title}</p>
-              <ul className="space-y-2">
+              <p className="text-xs font-black text-slate-900 uppercase tracking-widest mb-4">{col.title}</p>
+              <ul className="space-y-2.5">
                 {col.items.map(item => (
-                  <li key={item}>
-                    <a href="#" className="text-xs text-text-secondary hover:text-text-primary transition-colors">{item}</a>
-                  </li>
+                  <li key={item}><a href="#" className="text-sm text-slate-500 hover:text-slate-900 transition-colors">{item}</a></li>
                 ))}
               </ul>
             </div>
           ))}
         </div>
-
-        {/* Bottom bar */}
-        <div className="mt-10 pt-6 border-t border-border flex flex-wrap items-center justify-between gap-4">
-          <p className="text-xs text-text-muted font-mono">
-            © 2026 Oil Risk Monitor AI. Todos los derechos reservados.
-          </p>
-          <div className="flex flex-wrap gap-3">
+        <div className="mt-12 pt-6 border-t border-slate-100 flex flex-wrap items-center justify-between gap-4">
+          <p className="text-xs text-slate-400">© 2026 Oil Risk Monitor AI. Todos los derechos reservados.</p>
+          <div className="flex flex-wrap gap-4">
             {['ISO 27001', 'SOC 2', 'ISO 14001', 'GDPR'].map(c => (
-              <div key={c} className="flex items-center gap-1 text-[10px] font-mono text-text-muted">
-                <Shield size={9} className="text-ok" />
-                {c}
+              <div key={c} className="flex items-center gap-1.5 text-xs text-slate-400">
+                <Shield size={10} className="text-emerald-500" />{c}
               </div>
             ))}
           </div>
@@ -623,16 +690,18 @@ function LandingFooter() {
   )
 }
 
-// ── Landing export ───────────────────────────────────────────────────────────
+// ── Landing export ────────────────────────────────────────────────────────────
 export function Landing() {
   return (
-    <div className="min-h-screen bg-background text-text-primary overflow-x-hidden">
+    <div className="bg-white text-slate-900 overflow-x-hidden">
       <LandingNav />
       <HeroSection />
       <TrustBar />
+      <ProblemSection />
       <FeaturesSection />
       <HowItWorksSection />
       <MetricsSection />
+      <TestimonialsSection />
       <CTASection />
       <LandingFooter />
     </div>
