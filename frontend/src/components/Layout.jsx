@@ -1,11 +1,12 @@
-import { NavLink, Outlet } from 'react-router-dom'
+import { NavLink, Outlet, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import {
   LayoutDashboard, Bell, Ticket, MapPin, FileText,
-  Settings, Radio, Globe, ChevronRight, Activity
+  Settings, Radio, Globe, ChevronRight, Activity, LogOut
 } from 'lucide-react'
 import { mockKPIs } from '@/data/mock'
 import { cn } from '@/lib/utils'
+import { useAuth } from '@/hooks/useAuth'
 
 function LanguageToggle() {
   const { i18n } = useTranslation()
@@ -52,8 +53,16 @@ function NavItem({ to, icon: Icon, label, badge }) {
 
 export function Layout() {
   const { t } = useTranslation()
+  const { logout, getSession } = useAuth()
+  const navigate = useNavigate()
+  const session = getSession()
   const activeAlerts = mockKPIs.activeAlerts
   const openTickets = mockKPIs.openTickets
+
+  const handleLogout = () => {
+    logout()
+    navigate('/')
+  }
 
   return (
     <div className="flex h-screen overflow-hidden">
@@ -75,23 +84,33 @@ export function Layout() {
         {/* Nav */}
         <nav className="flex-1 p-2 space-y-0.5 overflow-y-auto">
           <div className="section-title px-1 mt-1">Operaciones</div>
-          <NavItem to="/" icon={LayoutDashboard} label={t('nav.dashboard')} />
-          <NavItem to="/alerts" icon={Bell} label={t('nav.alerts')} badge={activeAlerts} />
-          <NavItem to="/tickets" icon={Ticket} label={t('nav.tickets')} badge={openTickets} />
-          <NavItem to="/assets" icon={MapPin} label={t('nav.assets')} />
+          <NavItem to="/app/dashboard" icon={LayoutDashboard} label={t('nav.dashboard')} />
+          <NavItem to="/app/alerts" icon={Bell} label={t('nav.alerts')} badge={activeAlerts} />
+          <NavItem to="/app/tickets" icon={Ticket} label={t('nav.tickets')} badge={openTickets} />
+          <NavItem to="/app/assets" icon={MapPin} label={t('nav.assets')} />
 
           <div className="section-title px-1 mt-3">Compliance</div>
-          <NavItem to="/reports" icon={FileText} label={t('nav.reports')} />
+          <NavItem to="/app/reports" icon={FileText} label={t('nav.reports')} />
 
           <div className="section-title px-1 mt-3">Sistema</div>
-          <NavItem to="/settings" icon={Settings} label={t('nav.settings')} />
+          <NavItem to="/app/settings" icon={Settings} label={t('nav.settings')} />
         </nav>
 
         {/* Footer */}
         <div className="p-3 border-t border-border space-y-2">
-          <LanguageToggle />
+          <div className="flex items-center justify-between">
+            <LanguageToggle />
+            <button onClick={handleLogout}
+              className="flex items-center gap-1 text-[11px] text-text-muted hover:text-text-secondary transition-colors px-1.5 py-1 rounded hover:bg-surface-2"
+              title="Cerrar sesión">
+              <LogOut size={11} />
+            </button>
+          </div>
+          {session?.email && (
+            <p className="text-[10px] font-mono text-text-muted truncate px-1">{session.email}</p>
+          )}
           <div className="flex items-center gap-2">
-            <span className="status-dot-ok" />
+            <span className="w-1.5 h-1.5 rounded-full bg-ok flex-shrink-0" />
             <span className="text-xs font-mono text-text-muted">5 activos · 10 scans/día</span>
           </div>
           <div className="text-[10px] font-mono text-text-muted px-1 py-0.5 bg-brand-dim rounded border border-brand/20 text-center">
