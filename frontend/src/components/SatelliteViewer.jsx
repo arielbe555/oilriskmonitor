@@ -99,7 +99,7 @@ export function SatelliteViewer({ beforeUrl, afterUrl, analysis }) {
         <div className="card border-l-2 border-l-brand space-y-3">
           <div className="flex items-center gap-2">
             <Brain size={14} className="text-brand" />
-            <span className="text-xs font-mono uppercase tracking-wider text-text-secondary">Análisis Claude AI</span>
+            <span className="text-xs font-mono uppercase tracking-wider text-text-secondary">Análisis IA</span>
           </div>
 
           <div className="flex flex-wrap gap-2 items-center">

@@ -267,7 +267,7 @@ function HeroSection() {
           <div className="inline-flex items-center gap-2.5 bg-orange-50 border border-orange-100 rounded-full px-4 py-1.5">
             <span className="w-1.5 h-1.5 rounded-full bg-brand animate-pulse" />
             <span className="text-xs font-bold text-brand tracking-wide">
-              Sentinel-1 SAR + Claude AI · Detección en &lt; 24h
+              Satellite AI · Detección en &lt; 24h
             </span>
           </div>
 
@@ -397,7 +397,7 @@ function ProblemSection() {
             <ul className="space-y-3.5">
               {[
                 'Detección satelital en menos de 24 horas',
-                'Análisis automático con Claude AI',
+                'Análisis automático con IA propia',
                 'Tickets auditables con trazabilidad total',
                 'Reportes ESG firmados RSA-2048 automáticos',
                 'Siempre un paso adelante del regulador',
@@ -419,7 +419,7 @@ function ProblemSection() {
 function FeaturesSection() {
   const features = [
     { icon: Satellite, color: 'blue', title: 'Imágenes Sentinel-1 SAR', desc: 'Radar ESA Copernicus. Detecta hidrocarburos en superficie con cualquier condición climática, noche o día.' },
-    { icon: Zap, color: 'orange', title: 'Análisis con Claude AI', desc: 'claude-opus-4-5 procesa cada imagen en segundos. 94% de precisión con coordenadas GPS exactas del incidente.' },
+    { icon: Zap, color: 'orange', title: 'Análisis con IA avanzada', desc: 'Nuestro motor de IA procesa cada imagen satelital en segundos. 94% de precisión con coordenadas GPS exactas del incidente.' },
     { icon: Bell, color: 'amber', title: 'Alertas multicanal en tiempo real', desc: 'Email, SMS y Telegram. Jerarquía de escalado configurable por severidad, horario y turno de trabajo.' },
     { icon: FileText, color: 'violet', title: 'Tickets auditables', desc: 'Workflow completo: detección → asignación → campo → resolución → auditoría. Timeline inmutable.' },
     { icon: Shield, color: 'emerald', title: 'Reportes ESG firmados', desc: 'PDF con firma RSA-2048 y hash SHA-256. Evidencia admisible en auditorías ISO 14001 y SOC 2 Type II.' },
@@ -472,7 +472,7 @@ function FeaturesSection() {
 function HowItWorksSection() {
   const steps = [
     { icon: Satellite, title: 'Scan satelital automático', desc: 'Sentinel-1 SAR y Sentinel-2 escanean cada activo cada 6 horas, 365 días al año, en cualquier condición.' },
-    { icon: Zap, title: 'IA detecta anomalías', desc: 'Claude AI analiza imágenes en segundos e identifica derrames, fugas y cambios con coordenadas GPS.' },
+    { icon: Zap, title: 'IA detecta anomalías', desc: 'Nuestro motor de IA analiza cada imagen en segundos e identifica derrames, fugas y cambios con coordenadas GPS.' },
     { icon: Bell, title: 'Alerta + ticket automático', desc: 'Notificación al responsable correcto + ticket con evidencia satelital para iniciar respuesta inmediata.' },
     { icon: Shield, title: 'Reporte ESG firmado', desc: 'PDF periódico con firma RSA-2048. Listo para auditorías ISO 14001 y reguladores ambientales.' },
   ]
@@ -530,7 +530,7 @@ function MetricsSection() {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-4">
           {[
             { value: '< 24h', label: 'Tiempo de detección', sub: 'vs 48–72h industria', highlight: true },
-            { value: '94%', label: 'Precisión del modelo', sub: 'Sentinel-1 SAR + Claude AI', highlight: false },
+            { value: '94%', label: 'Precisión del modelo', sub: 'Sentinel-1 SAR + IA propia', highlight: false },
             { value: '200+', label: 'Activos monitoreados', sub: '5 países LATAM', highlight: false },
             { value: '50M+', label: 'm² analizados', sub: 'Superficie diaria cubierta', highlight: false },
           ].map((m, i) => (
