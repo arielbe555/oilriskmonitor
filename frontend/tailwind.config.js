@@ -51,6 +51,10 @@ export default {
           '50%': { width: '85%' },
           '100%': { width: '20%' },
         },
+        rotatePlanet: {
+          '0%': { transform: 'translateX(0)' },
+          '100%': { transform: 'translateX(-50%)' },
+        },
       },
     },
   },

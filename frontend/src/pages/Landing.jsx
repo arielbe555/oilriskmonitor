@@ -6,23 +6,184 @@ import {
 } from 'lucide-react'
 import { useAuth } from '@/hooks/useAuth'
 
-// ── Hero Video ───────────────────────────────────────────────────────────────
+// ── 3D Rotating Planet with Satellites ──────────────────────────────────────
 function GlobeViz() {
   return (
-    <div className="relative w-full max-w-[560px] mx-auto select-none">
-      {/* Floor shadow */}
-      <div className="absolute -bottom-6 left-1/2 -translate-x-1/2 w-[65%] h-10 blur-2xl"
-        style={{ background: 'radial-gradient(ellipse, rgba(59,130,246,0.18) 0%, transparent 70%)' }} />
+    <div className="relative w-full max-w-[540px] mx-auto select-none" style={{ paddingTop: 60, paddingBottom: 60 }}>
 
-      {/* Video */}
-      <video
-        autoPlay
-        muted
-        loop
-        playsInline
-        className="w-full rounded-2xl shadow-2xl shadow-slate-300/60 relative z-10"
-        src="/video/front.mp4"
-      />
+      {/* Planet wrapper */}
+      <div className="relative mx-auto" style={{ width: 340, height: 340 }}>
+
+        {/* Atmosphere glow ring */}
+        <div className="absolute rounded-full pointer-events-none" style={{
+          inset: -22,
+          background: 'radial-gradient(circle, transparent 43%, rgba(96,165,250,0.32) 54%, rgba(59,130,246,0.1) 68%, transparent 80%)',
+          filter: 'blur(12px)',
+        }} />
+
+        {/* Planet sphere */}
+        <div className="absolute inset-0 rounded-full overflow-hidden" style={{
+          boxShadow: [
+            'inset -70px -24px 130px rgba(0,0,30,0.9)',
+            'inset 24px 12px 75px rgba(255,255,255,0.05)',
+            '0 28px 90px rgba(14,78,180,0.32)',
+            '0 0 0 1.5px rgba(100,160,255,0.2)',
+          ].join(','),
+        }}>
+          {/* Ocean base */}
+          <div className="absolute inset-0" style={{
+            background: 'linear-gradient(178deg, #1a56a8 0%, #1565c0 28%, #0d3d8c 62%, #071a52 100%)',
+          }} />
+
+          {/* Scrolling continent texture */}
+          <div className="absolute top-0 bottom-0" style={{
+            left: 0, width: '200%',
+            backgroundSize: '50% 100%',
+            backgroundRepeat: 'repeat-x',
+            animation: 'rotatePlanet 30s linear infinite',
+            background: [
+              'radial-gradient(ellipse 80px 88px at 18% 30%, rgba(52,128,58,0.82) 0%, rgba(30,85,34,0.5) 48%, transparent 72%)',
+              'radial-gradient(ellipse 30px 22px at 22% 46%, rgba(72,148,68,0.65) 0%, transparent 60%)',
+              'radial-gradient(ellipse 36px 27px at 25% 12%, rgba(218,232,248,0.58) 0%, transparent 62%)',
+              'radial-gradient(ellipse 62px 106px at 28% 63%, rgba(42,120,46,0.84) 0%, rgba(24,85,28,0.52) 48%, transparent 72%)',
+              'radial-gradient(ellipse 18px 88px at 24% 60%, rgba(105,82,58,0.44) 0%, transparent 65%)',
+              'radial-gradient(ellipse 26px 30px at 27% 82%, rgba(128,142,132,0.42) 0%, transparent 60%)',
+              'radial-gradient(ellipse 100% 16px at 50% 98%, rgba(222,236,255,0.55) 0%, transparent 100%)',
+              'radial-gradient(ellipse 44px 36px at 52% 25%, rgba(96,178,100,0.74) 0%, transparent 62%)',
+              'radial-gradient(ellipse 20px 30px at 54% 16%, rgba(165,198,172,0.5) 0%, transparent 58%)',
+              'radial-gradient(ellipse 60px 30px at 54% 42%, rgba(190,166,88,0.72) 0%, transparent 62%)',
+              'radial-gradient(ellipse 50px 66px at 55% 60%, rgba(108,78,46,0.78) 0%, rgba(82,60,36,0.5) 48%, transparent 70%)',
+              'radial-gradient(ellipse 26px 34px at 62% 41%, rgba(186,158,78,0.66) 0%, transparent 60%)',
+              'radial-gradient(ellipse 24px 40px at 68% 50%, rgba(108,78,46,0.7) 0%, transparent 62%)',
+              'radial-gradient(ellipse 98px 54px at 72% 22%, rgba(78,128,82,0.68) 0%, rgba(152,182,152,0.4) 48%, transparent 70%)',
+              'radial-gradient(ellipse 70px 54px at 76% 36%, rgba(76,138,80,0.74) 0%, transparent 65%)',
+              'radial-gradient(ellipse 34px 28px at 80% 52%, rgba(54,118,58,0.66) 0%, transparent 60%)',
+              'radial-gradient(ellipse 56px 42px at 82% 67%, rgba(182,136,70,0.76) 0%, rgba(152,112,60,0.5) 48%, transparent 65%)',
+              'radial-gradient(ellipse 12px 20px at 90% 72%, rgba(80,138,84,0.56) 0%, transparent 60%)',
+              'radial-gradient(ellipse 14px 24px at 86% 36%, rgba(90,152,94,0.62) 0%, transparent 58%)',
+              'linear-gradient(178deg, #1a56a8 0%, #1565c0 28%, #0d3d8c 62%, #071a52 100%)',
+            ].join(','),
+          }} />
+
+          {/* Cloud wisps */}
+          <div className="absolute top-0 bottom-0" style={{
+            left: 0, width: '200%',
+            backgroundSize: '50% 100%',
+            backgroundRepeat: 'repeat-x',
+            animation: 'rotatePlanet 52s linear infinite',
+            background: [
+              'radial-gradient(ellipse 88px 16px at 32% 32%, rgba(255,255,255,0.2) 0%, transparent 80%)',
+              'radial-gradient(ellipse 62px 12px at 58% 20%, rgba(255,255,255,0.17) 0%, transparent 78%)',
+              'radial-gradient(ellipse 105px 14px at 46% 56%, rgba(255,255,255,0.14) 0%, transparent 80%)',
+              'radial-gradient(ellipse 52px 10px at 76% 44%, rgba(255,255,255,0.18) 0%, transparent 75%)',
+              'transparent',
+            ].join(','),
+          }} />
+
+          {/* Day/night terminator */}
+          <div className="absolute inset-0" style={{
+            background: 'radial-gradient(circle at 73% 44%, transparent 26%, rgba(0,0,22,0.62) 62%, rgba(0,0,16,0.88) 100%)',
+          }} />
+
+          {/* Specular highlight */}
+          <div className="absolute inset-0" style={{
+            background: 'radial-gradient(circle at 28% 27%, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0.04) 24%, transparent 50%)',
+          }} />
+        </div>
+
+        {/* Satellites + orbits SVG — centered on planet */}
+        <svg
+          className="absolute pointer-events-none"
+          style={{ inset: -115, width: 'calc(100% + 230px)', height: 'calc(100% + 230px)', overflow: 'visible' }}
+          viewBox="0 0 570 570"
+        >
+          <defs>
+            {/* orbit paths centered at (285,285), planet r=170 */}
+            <path id="o1" d="M 515,285 A 230,70 0 0,1 55,285 A 230,70 0 0,1 515,285" transform="rotate(-20, 285, 285)" />
+            <path id="o2" d="M 360,285 A 75,215 0 0,1 210,285 A 75,215 0 0,1 360,285" transform="rotate(18, 285, 285)" />
+            <path id="o3" d="M 535,285 A 250,76 0 0,0 35,285 A 250,76 0 0,1 535,285" transform="rotate(52, 285, 285)" />
+          </defs>
+
+          {/* Orbit ring 1 — orange */}
+          <ellipse cx="285" cy="285" rx="230" ry="70"
+            fill="none" stroke="rgba(255,107,0,0.28)" strokeWidth="1.5" strokeDasharray="7 5"
+            transform="rotate(-20, 285, 285)" />
+          {/* Orbit ring 2 — blue */}
+          <ellipse cx="285" cy="285" rx="75" ry="215"
+            fill="none" stroke="rgba(96,165,250,0.2)" strokeWidth="1" strokeDasharray="5 6"
+            transform="rotate(18, 285, 285)" />
+          {/* Orbit ring 3 — green */}
+          <ellipse cx="285" cy="285" rx="250" ry="76"
+            fill="none" stroke="rgba(74,222,128,0.18)" strokeWidth="1" strokeDasharray="4 7"
+            transform="rotate(52, 285, 285)" />
+
+          {/* Satellite 1 — Sentinel-1 SAR (orange) */}
+          <g>
+            <circle r="22" fill="rgba(255,107,0,0.1)">
+              <animateMotion dur="14s" repeatCount="indefinite"><mpath href="#o1" /></animateMotion>
+            </circle>
+            <rect x="-13" y="-3" width="9" height="6" rx="1.5" fill="#FFB74D" opacity="0.95">
+              <animateMotion dur="14s" repeatCount="indefinite"><mpath href="#o1" /></animateMotion>
+            </rect>
+            <rect x="4" y="-3" width="9" height="6" rx="1.5" fill="#FFB74D" opacity="0.95">
+              <animateMotion dur="14s" repeatCount="indefinite"><mpath href="#o1" /></animateMotion>
+            </rect>
+            <circle r="5.5" fill="#FF6B00">
+              <animateMotion dur="14s" repeatCount="indefinite"><mpath href="#o1" /></animateMotion>
+            </circle>
+          </g>
+
+          {/* Satellite 2 — Sentinel-2 optical (blue) */}
+          <g>
+            <circle r="16" fill="rgba(59,130,246,0.1)">
+              <animateMotion dur="21s" repeatCount="indefinite" begin="-8s"><mpath href="#o2" /></animateMotion>
+            </circle>
+            <rect x="-11" y="-2.5" width="8" height="5" rx="1" fill="#93C5FD" opacity="0.9">
+              <animateMotion dur="21s" repeatCount="indefinite" begin="-8s"><mpath href="#o2" /></animateMotion>
+            </rect>
+            <rect x="3" y="-2.5" width="8" height="5" rx="1" fill="#93C5FD" opacity="0.9">
+              <animateMotion dur="21s" repeatCount="indefinite" begin="-8s"><mpath href="#o2" /></animateMotion>
+            </rect>
+            <circle r="4.5" fill="#60A5FA">
+              <animateMotion dur="21s" repeatCount="indefinite" begin="-8s"><mpath href="#o2" /></animateMotion>
+            </circle>
+          </g>
+
+          {/* Satellite 3 — environmental (green) */}
+          <g>
+            <circle r="13" fill="rgba(34,197,94,0.1)">
+              <animateMotion dur="27s" repeatCount="indefinite" begin="-14s"><mpath href="#o3" /></animateMotion>
+            </circle>
+            <rect x="-9" y="-2" width="6" height="4" rx="1" fill="#86EFAC" opacity="0.9">
+              <animateMotion dur="27s" repeatCount="indefinite" begin="-14s"><mpath href="#o3" /></animateMotion>
+            </rect>
+            <rect x="3" y="-2" width="6" height="4" rx="1" fill="#86EFAC" opacity="0.9">
+              <animateMotion dur="27s" repeatCount="indefinite" begin="-14s"><mpath href="#o3" /></animateMotion>
+            </rect>
+            <circle r="3.5" fill="#4ADE80">
+              <animateMotion dur="27s" repeatCount="indefinite" begin="-14s"><mpath href="#o3" /></animateMotion>
+            </circle>
+          </g>
+
+          {/* Alert ping — Patagonia approx */}
+          <g transform="translate(258, 326)">
+            <circle r="5" fill="#DC2626" />
+            <circle r="5" fill="none" stroke="#DC2626" strokeWidth="2" opacity="0.75">
+              <animate attributeName="r" values="5;22;5" dur="2s" repeatCount="indefinite" />
+              <animate attributeName="opacity" values="0.75;0;0.75" dur="2s" repeatCount="indefinite" />
+            </circle>
+            <circle r="5" fill="none" stroke="#DC2626" strokeWidth="1">
+              <animate attributeName="r" values="5;36;5" dur="2s" begin="0.5s" repeatCount="indefinite" />
+              <animate attributeName="opacity" values="0.35;0;0.35" dur="2s" begin="0.5s" repeatCount="indefinite" />
+            </circle>
+          </g>
+
+          {/* OK asset marker */}
+          <circle cx="295" cy="345" r="4.5" fill="#22c55e" opacity="0.85" />
+          <circle cx="310" cy="312" r="3.5" fill="#22c55e" opacity="0.7" />
+        </svg>
+
+      </div>
 
       {/* Alert card — white, shadow */}
       <div className="absolute top-[3%] right-[-2%] lg:right-[-10%] bg-white rounded-2xl p-4 shadow-xl shadow-slate-200 border border-slate-100 min-w-[215px]">
