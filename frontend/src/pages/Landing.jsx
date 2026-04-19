@@ -6,147 +6,23 @@ import {
 } from 'lucide-react'
 import { useAuth } from '@/hooks/useAuth'
 
-// ── Globe: ocean + continents + satellite ────────────────────────────────────
+// ── Hero Video ───────────────────────────────────────────────────────────────
 function GlobeViz() {
   return (
-    <div className="relative w-full max-w-[500px] mx-auto select-none">
+    <div className="relative w-full max-w-[560px] mx-auto select-none">
       {/* Floor shadow */}
       <div className="absolute -bottom-6 left-1/2 -translate-x-1/2 w-[65%] h-10 blur-2xl"
         style={{ background: 'radial-gradient(ellipse, rgba(59,130,246,0.18) 0%, transparent 70%)' }} />
 
-      <svg viewBox="0 0 400 400" className="w-full relative z-10">
-        <defs>
-          {/* Ocean */}
-          <radialGradient id="ocean" cx="36%" cy="30%" r="70%">
-            <stop offset="0%" stopColor="#EFF6FF" />
-            <stop offset="30%" stopColor="#DBEAFE" />
-            <stop offset="65%" stopColor="#BFDBFE" />
-            <stop offset="100%" stopColor="#93C5FD" />
-          </radialGradient>
-          {/* 3D highlight top-left */}
-          <radialGradient id="gLight" cx="30%" cy="25%" r="55%">
-            <stop offset="0%" stopColor="white" stopOpacity="0.45" />
-            <stop offset="100%" stopColor="white" stopOpacity="0" />
-          </radialGradient>
-          {/* 3D shadow bottom-right */}
-          <radialGradient id="gShadow" cx="72%" cy="76%" r="52%">
-            <stop offset="0%" stopColor="#1E3A5F" stopOpacity="0.28" />
-            <stop offset="100%" stopColor="#1E3A5F" stopOpacity="0" />
-          </radialGradient>
-          {/* Atmosphere ring */}
-          <radialGradient id="atmo" cx="50%" cy="50%" r="50%">
-            <stop offset="82%" stopColor="#60A5FA" stopOpacity="0" />
-            <stop offset="100%" stopColor="#60A5FA" stopOpacity="0.22" />
-          </radialGradient>
-          {/* Filters */}
-          <filter id="dg" x="-80%" y="-80%" width="260%" height="260%">
-            <feGaussianBlur stdDeviation="2.5" result="b"/>
-            <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
-          </filter>
-          <filter id="sg" x="-150%" y="-150%" width="400%" height="400%">
-            <feGaussianBlur stdDeviation="5.5" result="b"/>
-            <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
-          </filter>
-          <clipPath id="sc"><circle cx="200" cy="200" r="168" /></clipPath>
-          {/* Orbit animation path */}
-          <path id="op" d="M 415 200 A 215 78 0 0 0 -15 200 A 215 78 0 0 1 415 200"
-            transform="rotate(-22 200 200)" />
-        </defs>
-
-        {/* Atmosphere glow */}
-        <circle cx="200" cy="200" r="179" fill="url(#atmo)" />
-
-        {/* Ocean sphere */}
-        <circle cx="200" cy="200" r="168" fill="url(#ocean)" />
-
-        {/* Continents clipped to globe */}
-        <g clipPath="url(#sc)">
-          {/* South America */}
-          <path fill="#6EE7B7" opacity="0.72" d="
-            M 163 108 Q 186 94 216 100 Q 250 108 265 134
-            Q 274 161 269 194 Q 263 227 248 253
-            Q 233 273 216 285 Q 200 293 187 283
-            Q 170 269 162 249 Q 150 226 150 202
-            Q 147 175 152 149 Q 155 128 160 112 Z" />
-          {/* North tip - Colombia */}
-          <path fill="#6EE7B7" opacity="0.55" d="
-            M 163 108 Q 155 97 163 88 Q 173 81 185 89 Q 191 97 185 105 Z" />
-          {/* Falklands */}
-          <ellipse cx="232" cy="295" rx="9" ry="5" fill="#6EE7B7" opacity="0.45" />
-          {/* Central America / southern Mexico */}
-          <path fill="#6EE7B7" opacity="0.4" d="
-            M 90 70 Q 126 50 155 68 Q 158 88 143 98 Q 114 104 90 88 Z" />
-          {/* Africa */}
-          <path fill="#6EE7B7" opacity="0.38" d="
-            M 278 120 Q 305 132 310 168 Q 314 202 296 222
-            Q 278 238 265 222 Q 256 198 260 168 Q 263 140 272 125 Z" />
-          {/* Europe/North Africa hint */}
-          <path fill="#6EE7B7" opacity="0.28" d="
-            M 278 88 Q 304 76 316 94 Q 311 114 292 118 Q 276 112 274 98 Z" />
-        </g>
-
-        {/* Grid lines */}
-        <g clipPath="url(#sc)" fill="none" stroke="#93C5FD" strokeWidth="0.5" opacity="0.3">
-          <ellipse cx="200" cy="200" rx="168" ry="55" />
-          <ellipse cx="200" cy="157" rx="147" ry="48" />
-          <ellipse cx="200" cy="243" rx="147" ry="48" />
-          <ellipse cx="200" cy="114" rx="98" ry="32" />
-          <ellipse cx="200" cy="286" rx="98" ry="32" />
-          <ellipse cx="200" cy="200" rx="52" ry="168" />
-          <ellipse cx="200" cy="200" rx="115" ry="168" />
-          <line x1="200" y1="32" x2="200" y2="368" />
-        </g>
-
-        {/* 3D shading */}
-        <circle cx="200" cy="200" r="168" fill="url(#gLight)" />
-        <circle cx="200" cy="200" r="168" fill="url(#gShadow)" />
-
-        {/* Globe border */}
-        <circle cx="200" cy="200" r="168" fill="none" stroke="#BFDBFE" strokeWidth="1.2" />
-
-        {/* Orbital path */}
-        <ellipse cx="200" cy="200" rx="215" ry="78"
-          fill="none" stroke="#FF6B00" strokeWidth="2" strokeDasharray="7 5" opacity="0.55"
-          transform="rotate(-22 200 200)" />
-
-        {/* CRITICAL: Pozo Norte-14, Patagonia */}
-        <g filter="url(#dg)">
-          <circle cx="152" cy="248" r="6" fill="#DC2626" />
-          <circle cx="152" cy="248" r="6" fill="none" stroke="#DC2626" strokeWidth="2">
-            <animate attributeName="r" values="6;22;6" dur="2.2s" repeatCount="indefinite" />
-            <animate attributeName="opacity" values="0.75;0;0.75" dur="2.2s" repeatCount="indefinite" />
-          </circle>
-          <circle cx="152" cy="248" r="6" fill="none" stroke="#DC2626" strokeWidth="1">
-            <animate attributeName="r" values="6;38;6" dur="2.2s" begin="0.6s" repeatCount="indefinite" />
-            <animate attributeName="opacity" values="0.35;0;0.35" dur="2.2s" begin="0.6s" repeatCount="indefinite" />
-          </circle>
-        </g>
-
-        {/* MEDIUM: Oleoducto */}
-        <g filter="url(#dg)">
-          <circle cx="175" cy="218" r="5" fill="#EA580C" />
-          <circle cx="175" cy="218" r="5" fill="none" stroke="#EA580C" strokeWidth="1.5">
-            <animate attributeName="r" values="5;16;5" dur="3s" repeatCount="indefinite" />
-            <animate attributeName="opacity" values="0.6;0;0.6" dur="3s" repeatCount="indefinite" />
-          </circle>
-        </g>
-
-        {/* OK */}
-        <circle cx="209" cy="261" r="5" fill="#16A34A" filter="url(#dg)" />
-        <circle cx="240" cy="235" r="5" fill="#16A34A" filter="url(#dg)" />
-        {/* LOW */}
-        <circle cx="184" cy="203" r="4.5" fill="#CA8A04" filter="url(#dg)" />
-
-        {/* Satellite */}
-        <g filter="url(#sg)">
-          <circle r="16" fill="#FF6B00" opacity="0.12">
-            <animateMotion dur="10s" repeatCount="indefinite"><mpath href="#op" /></animateMotion>
-          </circle>
-          <circle r="6.5" fill="#FF6B00">
-            <animateMotion dur="10s" repeatCount="indefinite"><mpath href="#op" /></animateMotion>
-          </circle>
-        </g>
-      </svg>
+      {/* Video */}
+      <video
+        autoPlay
+        muted
+        loop
+        playsInline
+        className="w-full rounded-2xl shadow-2xl shadow-slate-300/60 relative z-10"
+        src="/video/front.mp4"
+      />
 
       {/* Alert card — white, shadow */}
       <div className="absolute top-[3%] right-[-2%] lg:right-[-10%] bg-white rounded-2xl p-4 shadow-xl shadow-slate-200 border border-slate-100 min-w-[215px]">
